@@ -1,0 +1,155 @@
+1:"$Sreact.fragment"
+2:I[47618,["/autumn-benchmark/_next/static/chunks/ca023ad85cd7aeee.js","/autumn-benchmark/_next/static/chunks/2ad5122eae704b1a.js"],"AppQueryProvider"]
+3:I[20416,["/autumn-benchmark/_next/static/chunks/ca023ad85cd7aeee.js","/autumn-benchmark/_next/static/chunks/2ad5122eae704b1a.js"],"ThemeProvider"]
+4:I[63155,["/autumn-benchmark/_next/static/chunks/ca023ad85cd7aeee.js","/autumn-benchmark/_next/static/chunks/2ad5122eae704b1a.js"],"ThemeToggle"]
+5:I[36064,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+6:I[81497,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+7:I[42654,["/autumn-benchmark/_next/static/chunks/ca023ad85cd7aeee.js","/autumn-benchmark/_next/static/chunks/2ad5122eae704b1a.js","/autumn-benchmark/_next/static/chunks/e4fbf7e1818ab5cc.js","/autumn-benchmark/_next/static/chunks/be08138953094657.js"],"TasksPageClient"]
+12:I[9986,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+:HL["/autumn-benchmark/_next/static/chunks/8ed1ce78e12b237f.css","style"]
+:HL["/autumn-benchmark/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+8:T464,# Attach a Plan to a Customer with Autumn
+
+Build a Node.js billing onboarding script that creates customers and attaches a free plan to them using Autumn's `attach` endpoint.
+
+Implement the following at `/home/user/myproject`:
+
+- `onboard_customer.js` — Creates two customers in parallel and attaches the `"free"` plan to both, then writes the result to `onboard_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node onboard_customer.js`.
+
+Steps to perform **in parallel where possible**:
+1. Create/sync customer `user_test_001` (`"Bob Builder"`, `bob@example.com`) and `user_test_002` (`"Carol Coder"`, `carol@example.com`) using `autumn.customers.getOrCreate` with `Promise.all`.
+2. After both customers are created, attach the plan `"free"` to both in parallel using `autumn.attach({ customerId, productId: 'free' })`.
+3. Save results to `/home/user/myproject/onboard_result.json`:
+   ```json
+   {
+     "customers": [
+       { "customerId": "user_test_001", "planAttached": true },
+       { "customerId": "user_test_002", "planAttached": true }
+     ]
+   }
+   ```
+9:T533,# AI Generation with Balance Locking using Autumn
+
+Build a Node.js module that simulates an AI completion flow using Autumn's balance locking pattern to safely reserve and confirm token usage.
+
+Implement the following at `/home/user/myproject`:
+
+- `ai_generator.js` — Exports `generateWithBudget(customerId, maxTokens)` implementing the lock → work → finalize pattern
+- `run_generation.js` — Calls `generateWithBudget('user_test_001', 1000)` and writes the result to `generation_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node run_generation.js`.
+
+`generateWithBudget(customerId, maxTokens)` must:
+1. Generate a unique `lockId` like `completion_<uuid>`.
+2. Call `autumn.customers.check` with `featureId: 'ai-tokens'`, `requiredBalance: maxTokens`, `sendEvent: true`, and `lock: { enabled: true, lockId, expiresAt: Date.now() + 60000 }`.
+3. If `allowed` is `false`, throw `Error('Insufficient ai-tokens balance')`.
+4. Simulate AI work (100ms delay) returning `tokensUsed = Math.floor(maxTokens * 0.75)`.
+5. Call `autumn.balances.finalize({ lockId, action: 'confirm', overrideValue: tokensUsed })`.
+6. Return `{ lockId, tokensUsed, confirmed: true }`.
+7. On error during the work phase, call `autumn.balances.finalize({ lockId, action: 'release' })` and re-throw.
+a:T429,# Boolean Feature Gate for Premium Dashboard using Autumn
+
+Build an Express.js middleware and route that gates access to a premium dashboard using Autumn's boolean feature check.
+
+Implement the following at `/home/user/myproject`:
+
+- `middleware/auth.js` — Exports `requirePremium` middleware
+- `routes/dashboard.js` — Protected `GET /dashboard/premium` route
+- Update `index.js` to mount the dashboard router under `/dashboard`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+`requirePremium` middleware must:
+- Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent.
+- Call `autumn.customers.check({ customerId, featureId: 'premium-dashboard' })`.
+- Call `next()` if `allowed` is `true`.
+- Return HTTP 403 with `{ "error": "Premium plan required" }` if `allowed` is `false`.
+
+`GET /dashboard/premium` must:
+- Use the `requirePremium` middleware.
+- Return `{ "data": "Premium dashboard content", "customerId": "<customerId>" }` on success.
+b:T465,# Fail-Open Resilient Feature Check with Autumn
+
+Build a Node.js utility module that wraps Autumn's feature check with a fail-open pattern to keep your app available when the Autumn API is unreachable.
+
+Implement the following at `/home/user/myproject`:
+
+- `resilient_check.js` — Exports `resilientCheck` and `resilientCheckStrict` functions
+- `demo_check.js` — Runs `resilientCheck('user_test_001', 'messages')` and writes the result to `check_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node demo_check.js`.
+
+`resilientCheck(customerId, featureId)` must:
+- Call `autumn.customers.check({ customerId, featureId })`.
+- Return `{ allowed: true, source: 'autumn' }` on success.
+- On any error (network, timeout, 5xx), log `"AUTUMN UNREACHABLE, FAILING OPEN"` to stderr and return `{ allowed: true, source: 'fail-open' }`.
+
+`resilientCheckStrict(customerId, featureId)` must:
+- Use a separate Autumn instance configured with `failOpen: false`.
+- Re-throw any errors (does not fail open).
+- Return `{ allowed: result.allowed, source: 'autumn-strict' }` on success.
+c:T692,# Prorated Plan Upgrade with Preview using Autumn
+
+Build an Express.js billing upgrade flow with preview and confirmation endpoints using Autumn's `billing.previewAttach` and `attach` methods.
+
+Implement the following at `/home/user/myproject`:
+
+- `routes/billing.js` — Three billing routes mounted under `/billing`
+- Update `index.js` to mount the billing router under `/billing`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+### `POST /billing/preview-upgrade`
+- Accepts `{ "customerId": string, "targetPlanId": string }`.
+- Returns HTTP 400 with `{ "error": "customerId and targetPlanId are required" }` if either field is missing.
+- Calls `autumn.billing.previewAttach({ customerId, productId: targetPlanId })`.
+- Returns the preview response as JSON with HTTP 200.
+- On Autumn error, returns HTTP 502 with `{ "error": "Billing service unavailable", "details": err.message }`.
+
+### `POST /billing/confirm-upgrade`
+- Accepts `{ "customerId": string, "targetPlanId": string, "confirmed": boolean }`.
+- Returns HTTP 400 if any field is missing.
+- If `confirmed` is `false`, returns HTTP 200 with `{ "status": "cancelled" }`.
+- If `confirmed` is `true`, calls `autumn.attach({ customerId, productId: targetPlanId })` and returns `{ "status": "upgraded", "customerId": customerId, "planId": targetPlanId }`.
+- On error, returns HTTP 502.
+
+### `POST /billing/batch-check`
+- Accepts `{ "customerIds": string[], "featureId": string }`.
+- Calls `autumn.customers.check({ customerId, featureId })` for each customer **in parallel** using `Promise.all`.
+- Returns `{ "results": [{ "customerId", "allowed": boolean }] }`.
+d:T4ba,# Usage-Based Metering with Hard Quota Limit using Autumn
+
+Build an Express.js API metering middleware and route that enforces a hard usage quota using Autumn's `check` and `track` endpoints.
+
+Implement the following at `/home/user/myproject`:
+
+- `middleware/rateLimit.js` — Exports `checkApiQuota` middleware
+- `routes/api.js` — `POST /api/process` route protected by the quota middleware
+- Update `index.js` to mount the API router under `/api`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+`checkApiQuota` middleware must:
+- Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent.
+- Call `autumn.customers.check({ customerId, featureId: 'api-requests' })`.
+- If `allowed` is `false`, return HTTP 429 with `{ "error": "API quota exceeded", "allowed": false }`.
+- If `allowed` is `true`, call `autumn.customers.track({ customerId, featureId: 'api-requests', value: 1 })` then call `next()`.
+
+`POST /api/process` must:
+- Use the `checkApiQuota` middleware.
+- Accept a JSON body with a `payload` field.
+- Return `{ "result": "processed", "payload": "<value>", "customerId": "<id>" }`.
+0:{"P":null,"b":"wVKXEoaGUvntbUXODaimg","c":["","tasks",""],"q":"","i":false,"f":[[["",{"children":["tasks",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/autumn-benchmark/_next/static/chunks/8ed1ce78e12b237f.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/autumn-benchmark/_next/static/chunks/ca023ad85cd7aeee.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/autumn-benchmark/_next/static/chunks/2ad5122eae704b1a.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":["$","body",null,{"className":"inter_5972bc34-module__OU16Qa__className antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"defaultTheme":"dark","children":[["$","div",null,{"className":"fixed right-4 top-6 z-50 sm:top-8","children":["$","$L4",null,{}]}],["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]]}]}]}]}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-background text-foreground font-sans selection:bg-primary/20","children":[["$","div",null,{"className":"fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"}],["$","$L7",null,{"tasksData":[{"taskName":"attach_plan_to_customer","instruction":"$8","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"attach_plan_to_customer__kBtr7GS","model":"glm-4.7","agent":"Pochi","passed":false,"reward":null,"error":true,"latency_sec":115.525,"latency_breakdown":{"env_setup":3.208,"agent_setup":14.159,"agent_exec":98.002,"verifier":null},"taskName":"attach_plan_to_customer","jobId":"kBtr7GS","exec_duration":98.002},{"job_name":"2026-04-10__19-04-17","trial_name":"attach_plan_to_customer__7QpjEuU","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":250.842,"latency_breakdown":{"env_setup":5.259,"agent_setup":34.766,"agent_exec":194.424,"verifier":5.94},"taskName":"attach_plan_to_customer","jobId":"7QpjEuU","exec_duration":194.424},{"job_name":"2026-04-10__18-54-56","trial_name":"attach_plan_to_customer__ZvAV2ek","model":"gpt-5.2-codex","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":151.534,"latency_breakdown":{"env_setup":5.02,"agent_setup":24.948,"agent_exec":97.752,"verifier":13.416},"taskName":"attach_plan_to_customer","jobId":"ZvAV2ek","exec_duration":97.752},{"job_name":"2026-04-10__18-48-05","trial_name":"attach_plan_to_customer__dXiRLWv","model":"claude-4-6-sonnet","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":140.282,"latency_breakdown":{"env_setup":4.587,"agent_setup":36.751,"agent_exec":83.299,"verifier":5.292},"taskName":"attach_plan_to_customer","jobId":"dXiRLWv","exec_duration":83.299}]},{"taskName":"balance_locking_ai_generation","instruction":"$9","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"balance_locking_ai_generation__65M8ELP","model":"glm-4.7","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":231.922,"latency_breakdown":{"env_setup":5.344,"agent_setup":17.979,"agent_exec":192.692,"verifier":5.516},"taskName":"balance_locking_ai_generation","jobId":"65M8ELP","exec_duration":192.692},{"job_name":"2026-04-10__19-04-17","trial_name":"balance_locking_ai_generation__39kAvJ4","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":319.18,"latency_breakdown":{"env_setup":8.321,"agent_setup":39.201,"agent_exec":255.065,"verifier":6.232},"taskName":"balance_locking_ai_generation","jobId":"39kAvJ4","exec_duration":255.065},{"job_name":"2026-04-10__18-54-56","trial_name":"balance_locking_ai_generation__YQTM3oq","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":223.779,"latency_breakdown":{"env_setup":8.47,"agent_setup":43.488,"agent_exec":155.202,"verifier":6.248},"taskName":"balance_locking_ai_generation","jobId":"YQTM3oq","exec_duration":155.202},{"job_name":"2026-04-10__18-48-05","trial_name":"balance_locking_ai_generation__p5FPifj","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":191.971,"latency_breakdown":{"env_setup":7.803,"agent_setup":47.854,"agent_exec":118.897,"verifier":7.054},"taskName":"balance_locking_ai_generation","jobId":"p5FPifj","exec_duration":118.897}]},{"taskName":"boolean_feature_gate","instruction":"$a","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"boolean_feature_gate__6fsbeWQ","model":"glm-4.7","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":126.979,"latency_breakdown":{"env_setup":5.343,"agent_setup":18.94,"agent_exec":83.484,"verifier":8.783},"taskName":"boolean_feature_gate","jobId":"6fsbeWQ","exec_duration":83.484},{"job_name":"2026-04-10__19-04-17","trial_name":"boolean_feature_gate__LD73cnG","model":"gemini-3.1-pro","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":138.323,"latency_breakdown":{"env_setup":8.397,"agent_setup":41.971,"agent_exec":40.115,"verifier":37.504},"taskName":"boolean_feature_gate","jobId":"LD73cnG","exec_duration":40.115},{"job_name":"2026-04-10__18-54-56","trial_name":"boolean_feature_gate__GnS5TDj","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":145.376,"latency_breakdown":{"env_setup":8.126,"agent_setup":45.79,"agent_exec":73.304,"verifier":7.77},"taskName":"boolean_feature_gate","jobId":"GnS5TDj","exec_duration":73.304},{"job_name":"2026-04-10__18-48-05","trial_name":"boolean_feature_gate__EVfUW8f","model":"claude-4-6-sonnet","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":165.519,"latency_breakdown":{"env_setup":7.822,"agent_setup":41.912,"agent_exec":98.417,"verifier":7.016},"taskName":"boolean_feature_gate","jobId":"EVfUW8f","exec_duration":98.417}]},{"taskName":"check_feature_access","instruction":"# Check Feature Access with Autumn\n\nAdd a feature access check endpoint to an existing Express.js API using Autumn's `check` endpoint.\n\nImplement the following at `/home/user/myproject`:\n\n- Add route `POST /check-access` to the existing `index.js`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n\n`POST /check-access` must:\n1. Accept a JSON body with `customerId` and `featureId`.\n2. Call `autumn.customers.check({ customerId, featureId })`.\n3. Respond with HTTP 200 and the full Autumn response as JSON if `allowed` is `true`.\n4. Respond with HTTP 403 and the full Autumn response as JSON if `allowed` is `false`.\n","trials":[{"job_name":"2026-04-10__19-04-17","trial_name":"check_feature_access__P4jpLEL","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":255.092,"latency_breakdown":{"env_setup":8.316,"agent_setup":36.773,"agent_exec":188.567,"verifier":11.097},"taskName":"check_feature_access","jobId":"P4jpLEL","exec_duration":188.567},{"job_name":"2026-04-10__18-54-56","trial_name":"check_feature_access__H2m86Ei","model":"gpt-5.2-codex","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":152.171,"latency_breakdown":{"env_setup":8.479,"agent_setup":44.583,"agent_exec":73.163,"verifier":15.565},"taskName":"check_feature_access","jobId":"H2m86Ei","exec_duration":73.163},{"job_name":"2026-04-10__18-48-05","trial_name":"check_feature_access__YvvJTaP","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":127.587,"latency_breakdown":{"env_setup":7.905,"agent_setup":44.385,"agent_exec":27.667,"verifier":37.234},"taskName":"check_feature_access","jobId":"YvvJTaP","exec_duration":27.667}]},{"taskName":"entity_workspace_limits","instruction":"# Implement Multi-Tenant Workspace Usage Limits with Autumn\n\nBuild an Express.js API that manages workspace-level usage credits using Autumn's entity system. Each workspace is an Autumn entity under a parent organization customer, with its own independent credit balance.\n\nImplement the following REST API at `/home/user/myproject`:\n\n- `POST /workspaces` — Create a workspace entity in Autumn\n- `POST /workspaces/:workspaceId/use-credits` — Check and consume workspace credits\n- `GET /workspaces/:workspaceId/balance` — Fetch workspace entity balance\n- `DELETE /workspaces/:workspaceId` — Delete a workspace entity\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n","trials":[{"job_name":"2026-04-10__19-04-17","trial_name":"entity_workspace_limits__cSd2zVx","model":"gemini-3.1-pro","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":396.48,"latency_breakdown":{"env_setup":8.391,"agent_setup":40.819,"agent_exec":327.879,"verifier":9.001},"taskName":"entity_workspace_limits","jobId":"cSd2zVx","exec_duration":327.879},{"job_name":"2026-04-10__18-54-56","trial_name":"entity_workspace_limits__Y2kAj4V","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":191.245,"latency_breakdown":{"env_setup":8.453,"agent_setup":41.274,"agent_exec":122.349,"verifier":8.792},"taskName":"entity_workspace_limits","jobId":"Y2kAj4V","exec_duration":122.349},{"job_name":"2026-04-10__18-48-05","trial_name":"entity_workspace_limits__TKAvRTX","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":332.601,"latency_breakdown":{"env_setup":7.943,"agent_setup":36.825,"agent_exec":270.205,"verifier":7.242},"taskName":"entity_workspace_limits","jobId":"TKAvRTX","exec_duration":270.205}]},{"taskName":"fail_open_resilient_check","instruction":"$b","trials":[{"job_name":"2026-04-10__19-04-17","trial_name":"fail_open_resilient_check__BpUycgi","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":389.497,"latency_breakdown":{"env_setup":5.211,"agent_setup":38.578,"agent_exec":327.546,"verifier":7.751},"taskName":"fail_open_resilient_check","jobId":"BpUycgi","exec_duration":327.546},{"job_name":"2026-04-10__18-54-56","trial_name":"fail_open_resilient_check__JBaLZ86","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":79.656,"latency_breakdown":{"env_setup":4.928,"agent_setup":34.615,"agent_exec":24.079,"verifier":5.605},"taskName":"fail_open_resilient_check","jobId":"JBaLZ86","exec_duration":24.079},{"job_name":"2026-04-10__18-48-05","trial_name":"fail_open_resilient_check__XG3ThKF","model":"claude-4-6-sonnet","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":132.294,"latency_breakdown":{"env_setup":4.433,"agent_setup":37.828,"agent_exec":72.08,"verifier":7.584},"taskName":"fail_open_resilient_check","jobId":"XG3ThKF","exec_duration":72.08}]},{"taskName":"get_or_create_customer","instruction":"# Get or Create a Customer with Autumn\n\nWrite a Node.js script that syncs a customer record with Autumn using `customers.getOrCreate` and saves the result to a JSON file.\n\nImplement the following at `/home/user/myproject`:\n\n- `create_customer.js` — Initializes the Autumn SDK, calls `customers.getOrCreate`, prints the result as JSON to stdout, and saves output to `output.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node create_customer.js > output.json`.\n\nThe script must:\n1. Initialize `Autumn` with `process.env.AUTUMN_SECRET_KEY`.\n2. Call `autumn.customers.getOrCreate` with:\n   - `customerId`: `\"user_test_001\"`\n   - `name`: `\"Alice Testuser\"`\n   - `email`: `\"alice@example.com\"`\n3. Print the returned customer object as JSON to stdout.\n4. Use ES module syntax (`import`). The `package.json` already has `\"type\": \"module\"`.\n","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"get_or_create_customer__krW3neM","model":"glm-4.7","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":165.006,"latency_breakdown":{"env_setup":5.345,"agent_setup":21.523,"agent_exec":122.412,"verifier":5.375},"taskName":"get_or_create_customer","jobId":"krW3neM","exec_duration":122.412},{"job_name":"2026-04-10__19-04-17","trial_name":"get_or_create_customer__gopvQYW","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":130.047,"latency_breakdown":{"env_setup":8.426,"agent_setup":39.243,"agent_exec":62.086,"verifier":9.868},"taskName":"get_or_create_customer","jobId":"gopvQYW","exec_duration":62.086},{"job_name":"2026-04-10__18-54-56","trial_name":"get_or_create_customer__F92YW3A","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":87.946,"latency_breakdown":{"env_setup":8.578,"agent_setup":43.395,"agent_exec":20.172,"verifier":5.466},"taskName":"get_or_create_customer","jobId":"F92YW3A","exec_duration":20.172},{"job_name":"2026-04-10__18-48-05","trial_name":"get_or_create_customer__7WNJGa2","model":"claude-4-6-sonnet","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":111.782,"latency_breakdown":{"env_setup":8.004,"agent_setup":23.388,"agent_exec":56.083,"verifier":13.827},"taskName":"get_or_create_customer","jobId":"7WNJGa2","exec_duration":56.083}]},{"taskName":"preview_plan_upgrade","instruction":"$c","trials":[{"job_name":"2026-04-10__19-04-17","trial_name":"preview_plan_upgrade__8nSgzF5","model":"gemini-3.1-pro","agent":"Pochi","passed":true,"reward":1,"error":false,"latency_sec":286.796,"latency_breakdown":{"env_setup":8.321,"agent_setup":45.507,"agent_exec":213.856,"verifier":8.73},"taskName":"preview_plan_upgrade","jobId":"8nSgzF5","exec_duration":213.856},{"job_name":"2026-04-10__18-54-56","trial_name":"preview_plan_upgrade__nFfoA8y","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":174.755,"latency_breakdown":{"env_setup":8.51,"agent_setup":48.752,"agent_exec":98.004,"verifier":9.061},"taskName":"preview_plan_upgrade","jobId":"nFfoA8y","exec_duration":98.004},{"job_name":"2026-04-10__18-48-05","trial_name":"preview_plan_upgrade__ASNbX2H","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":148.586,"latency_breakdown":{"env_setup":7.775,"agent_setup":44.455,"agent_exec":48.186,"verifier":37.874},"taskName":"preview_plan_upgrade","jobId":"ASNbX2H","exec_duration":48.186}]},{"taskName":"track_usage_with_idempotency","instruction":"# Track Usage with Idempotency using Autumn\n\nWrite a Node.js script that records a usage event with Autumn's `track` endpoint using an idempotency key to prevent duplicate billing on retries.\n\nImplement the following at `/home/user/myproject`:\n\n- `track_usage.js` — Generates a unique idempotency key, tracks 1 unit of `\"api-calls\"` for `user_test_001`, and saves the result to `track_result.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node track_usage.js`.\n\nThe script must:\n1. Generate a unique `idempotencyKey` using `crypto.randomUUID()`, or use `process.env.IDEMPOTENCY_KEY` if set.\n2. Call `autumn.customers.track` with:\n   - `customerId`: `\"user_test_001\"`\n   - `featureId`: `\"api-calls\"`\n   - `value`: `1`\n   - `idempotencyKey`: the generated key\n3. Save the returned result to `/home/user/myproject/track_result.json`.\n4. Be idempotency-safe: running twice with the same `IDEMPOTENCY_KEY` env variable must only record usage once.\n","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"track_usage_with_idempotency__C6eaBWt","model":"glm-4.7","agent":"Pochi","passed":false,"reward":null,"error":true,"latency_sec":10.592,"latency_breakdown":{"env_setup":2.903,"agent_setup":7.475,"agent_exec":null,"verifier":null},"taskName":"track_usage_with_idempotency","jobId":"C6eaBWt","exec_duration":10.592},{"job_name":"2026-04-10__19-04-17","trial_name":"track_usage_with_idempotency__Q2sZs6j","model":"gemini-3.1-pro","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":107.393,"latency_breakdown":{"env_setup":5.255,"agent_setup":25.467,"agent_exec":58.204,"verifier":8.039},"taskName":"track_usage_with_idempotency","jobId":"Q2sZs6j","exec_duration":58.204},{"job_name":"2026-04-10__18-54-56","trial_name":"track_usage_with_idempotency__6AsTCD6","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":84.966,"latency_breakdown":{"env_setup":4.945,"agent_setup":34.992,"agent_exec":19.686,"verifier":14.955},"taskName":"track_usage_with_idempotency","jobId":"6AsTCD6","exec_duration":19.686},{"job_name":"2026-04-10__18-48-05","trial_name":"track_usage_with_idempotency__7HgH8Qx","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":150.723,"latency_breakdown":{"env_setup":4.516,"agent_setup":30.286,"agent_exec":96.994,"verifier":8.61},"taskName":"track_usage_with_idempotency","jobId":"7HgH8Qx","exec_duration":96.994}]},{"taskName":"usage_quota_hard_limit","instruction":"$d","trials":[{"job_name":"2026-04-10__18-20-17","trial_name":"usage_quota_hard_limit__ZzpPdM3","model":"glm-4.7","agent":"Pochi","passed":false,"reward":null,"error":true,"latency_sec":77.515,"latency_breakdown":{"env_setup":3.003,"agent_setup":15.672,"agent_exec":58.605,"verifier":0.011},"taskName":"usage_quota_hard_limit","jobId":"ZzpPdM3","exec_duration":58.605},{"job_name":"2026-04-10__19-04-17","trial_name":"usage_quota_hard_limit__JMkvdsg","model":"gemini-3.1-pro","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":164.288,"latency_breakdown":{"env_setup":5.26,"agent_setup":36.523,"agent_exec":74.33,"verifier":37.827},"taskName":"usage_quota_hard_limit","jobId":"JMkvdsg","exec_duration":74.33},{"job_name":"2026-04-10__18-54-56","trial_name":"usage_quota_hard_limit__z2QaUYX","model":"gpt-5.2-codex","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":117.274,"latency_breakdown":{"env_setup":5.032,"agent_setup":42.665,"agent_exec":51.181,"verifier":8.047},"taskName":"usage_quota_hard_limit","jobId":"z2QaUYX","exec_duration":51.181},{"job_name":"2026-04-10__18-48-05","trial_name":"usage_quota_hard_limit__Mqzu82P","model":"claude-4-6-sonnet","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":164.447,"latency_breakdown":{"env_setup":4.582,"agent_setup":36.942,"agent_exec":73.962,"verifier":38.603},"taskName":"usage_quota_hard_limit","jobId":"Mqzu82P","exec_duration":73.962}]}]}]]}],["$Le","$Lf"],"$L10"]}],{},null,false,false]},null,false,false]},null,false,false],"$L11",false]],"m":"$undefined","G":["$12",[]],"S":true}
+13:I[75049,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"OutletBoundary"]
+14:"$Sreact.suspense"
+16:I[75049,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"ViewportBoundary"]
+18:I[75049,["/autumn-benchmark/_next/static/chunks/d2c13bb33c4fcd54.js","/autumn-benchmark/_next/static/chunks/c21188132e0e0d48.js"],"MetadataBoundary"]
+e:["$","script","script-0",{"src":"/autumn-benchmark/_next/static/chunks/e4fbf7e1818ab5cc.js","async":true,"nonce":"$undefined"}]
+f:["$","script","script-1",{"src":"/autumn-benchmark/_next/static/chunks/be08138953094657.js","async":true,"nonce":"$undefined"}]
+10:["$","$L13",null,{"children":["$","$14",null,{"name":"Next.MetadataOutlet","children":"$@15"}]}]
+11:["$","$1","h",{"children":[null,["$","$L16",null,{"children":"$L17"}],["$","div",null,{"hidden":true,"children":["$","$L18",null,{"children":["$","$14",null,{"name":"Next.Metadata","children":"$L19"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+17:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+15:null
+19:[["$","title","0",{"children":"Autumn Benchmark"}],["$","meta","1",{"name":"description","content":"Performance results of AI coding models on Autumn tasks, measuring success rate and execution time with high precision."}]]
