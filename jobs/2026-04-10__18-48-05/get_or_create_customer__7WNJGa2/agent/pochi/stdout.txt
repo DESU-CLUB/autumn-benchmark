@@ -1,0 +1,43 @@
+- Initializing MCP connections...
+You
+# Get or Create a Customer with Autumn Write a Node.js script that syncs a customer record with Autumn using `customers.getOrCreate` and saves the result to a JSON file. Implement the following at `/home/user/myproject`: - `create_customer.js` — Initializes the Autumn SDK, calls `customers.getOrCreate`, prints the result as JSON to stdout, and saves output to `output.json` Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node create_customer.js > output.json`. The script must: 1. Initialize `Autumn` with `process.env.AUTUMN_SECRET_KEY`. 2. Call `autumn.customers.getOrCreate` with: - `customerId`: `"user_test_001"` - `name`: `"Alice Testuser"` - `email`: `"alice@example.com"` 3. Print the returned customer object as JSON to stdout. 4. Use ES module syntax (`import`). The `package.json` already has `"type": "module"`.   
+
+Pochi
+💭 Thinking for 99 characters   
+📂 Listing files in /home/user/myproject ✔ 
+📖 Reading /home/user/myproject/package.json ✔ 
+🔍 Searching for **/*.{js,ts,d.ts,json} in /home/user/myproject/node_modules/autumn-js ✔ 
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+📖 Reading /home/user/myproject/node_modules/autumn-js/package.json ✔ 
+Now let me check the SDK's `index.js` to understand the `Autumn` class and `customers.getOrCreate` signature:   
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.js ✔ 
+🔍 Searching for getOrCreate in /home/user/myproject/node_modules/autumn-js/dist/sdk ✔ 
+From the type definitions I can see: - The SDK exports an `Autumn` class (the main SDK class) - It has a `customers` property with a `getOrCreate` method (confirmed from line 16334: `getOrCreate(request: GetOrCreateCustomerParams, options?: RequestOptions): Promise<Customer>`) - The `Autumn` class is initialized with `SDKOptions` which has `secretKey` Now I have everything needed. Let me look at the exact `Autumn` constructor signature and the `customers` namespace quickly:   
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+Now I have all the information needed. The `Autumn` class has a `customers` property of type `Customers`, and `customers.getOrCreate` takes a `GetOrCreateCustomerParams` with `customerId`, `name`, `email`, etc. The SDK is initialized with `secretKey` in `SDKOptions`.   
+✏️  Writing /home/user/myproject/create_customer.js ✔ 
+Now let's verify the script runs correctly (it will fail with an auth error if the key isn't set, but we can confirm the module loads and the SDK initializes):   
+💫 Executing cd /home/user/myproject && node create_customer.js 2>&1 || true ✔ 
+The script ran successfully and returned a full customer object. Let's also verify `output.json` was written:   
+💫 Executing ls -lh /home/user/myproject/output.json && head -5 /home/user/myproject/output.json ✔ 
+🎉 Task Completed
+`/home/user/myproject/create_customer.js` has been created and executed successfully.
+
+**What the script does:**
+
+1. **Initializes** the `Autumn` SDK with `process.env.AUTUMN_SECRET_KEY`
+2. **Calls** `autumn.customers.getOrCreate` with:
+   - `customerId: "user_test_001"`
+   - `name: "Alice Testuser"`
+   - `email: "alice@example.com"`
+3. **Prints** the returned `Customer` object as pretty-printed JSON to stdout
+4. **Writes** the same JSON to `output.json` via `writeFileSync`
+
+The script uses ES module syntax (`import`) and is compatible with the `"type": "module"` setting already in `package.json`.
+
+**Usage:**
+```sh
+node create_customer.js > output.json
+```
+Both the stdout redirect and the internal `writeFileSync` produce `output.json` — the script ran live and the API returned a full customer record (id `user_test_001`, Stripe ID, subscriptions, balances, flags, etc.).   
+  

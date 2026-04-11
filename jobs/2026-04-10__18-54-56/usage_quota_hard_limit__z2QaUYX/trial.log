@@ -1,0 +1,81 @@
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model openai/gpt-5.2-codex --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Usage-Based Metering with Hard Quota Limit using Autumn
+
+Build an Express.js API metering middleware and route that enforces a hard usage quota using Autumn's `check` and `track` endpoints.
+
+Implement the following at `/home/user/myproject`:
+
+- `middleware/rateLimit.js` — Exports `checkApiQuota` middleware
+- `routes/api.js` — `POST /api/process` route protected by the quota middleware
+- Update `index.js` to mount the API router under `/api`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+`checkApiQuota` middleware must:
+- Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent.
+- Call `autumn.customers.check({ customerId, featureId: 'api-requests' })`.
+- If `allowed` is `false`, return HTTP 429 with `{ "error": "API quota exceeded", "allowed": false }`.
+- If `allowed` is `true`, call `autumn.customers.track({ customerId, featureId: 'api-requests', value: 1 })` then call `next()`.
+
+`POST /api/process` must:
+- Use the `checkApiQuota` middleware.
+- Accept a JSON body with a `payload` field.
+- Return `{ "result": "processed", "payload": "<value>", "customerId": "<id>" }`.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured

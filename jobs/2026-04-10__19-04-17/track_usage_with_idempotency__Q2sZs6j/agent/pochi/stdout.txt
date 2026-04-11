@@ -1,0 +1,20 @@
+- Initializing MCP connections...
+You
+# Track Usage with Idempotency using Autumn Write a Node.js script that records a usage event with Autumn's `track` endpoint using an idempotency key to prevent duplicate billing on retries. Implement the following at `/home/user/myproject`: - `track_usage.js` — Generates a unique idempotency key, tracks 1 unit of `"api-calls"` for `user_test_001`, and saves the result to `track_result.json` Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node track_usage.js`. The script must: 1. Generate a unique `idempotencyKey` using `crypto.randomUUID()`, or use `process.env.IDEMPOTENCY_KEY` if set. 2. Call `autumn.customers.track` with: - `customerId`: `"user_test_001"` - `featureId`: `"api-calls"` - `value`: `1` - `idempotencyKey`: the generated key 3. Save the returned result to `/home/user/myproject/track_result.json`. 4. Be idempotency-safe: running twice with the same `IDEMPOTENCY_KEY` env variable must only record usage once.   
+
+Pochi
+💭 Thinking for 3875 characters   
+✏️  Writing /home/user/myproject/track_usage.js ✔ 
+💭 Thinking for 737 characters   
+🎉 Task Completed
+I have created the `track_usage.js` script in `/home/user/myproject`.
+
+The script uses the `autumn-js` SDK to initialize the Autumn client using the `AUTUMN_SECRET_KEY` environment variable. It securely generates a unique idempotency key using `crypto.randomUUID()` (falling back to `process.env.IDEMPOTENCY_KEY` if provided), tracks 1 unit of `"api-calls"` for `"user_test_001"`, and then saves the result to `/home/user/myproject/track_result.json`.
+
+Because it passes the generated or provided `idempotencyKey` to `autumn.customers.track`, it is idempotency-safe and ensures that retrying the script with the same `IDEMPOTENCY_KEY` environment variable will prevent duplicate billing.
+
+You can run the script with:
+```bash
+node /home/user/myproject/track_usage.js
+```   
+  

@@ -1,0 +1,64 @@
+- Initializing MCP connections...
+You
+# Track Usage with Idempotency using Autumn Write a Node.js script that records a usage event with Autumn's `track` endpoint using an idempotency key to prevent duplicate billing on retries. Implement the following at `/home/user/myproject`: - `track_usage.js` — Generates a unique idempotency key, tracks 1 unit of `"api-calls"` for `user_test_001`, and saves the result to `track_result.json` Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node track_usage.js`. The script must: 1. Generate a unique `idempotencyKey` using `crypto.randomUUID()`, or use `process.env.IDEMPOTENCY_KEY` if set. 2. Call `autumn.customers.track` with: - `customerId`: `"user_test_001"` - `featureId`: `"api-calls"` - `value`: `1` - `idempotencyKey`: the generated key 3. Save the returned result to `/home/user/myproject/track_result.json`. 4. Be idempotency-safe: running twice with the same `IDEMPOTENCY_KEY` env variable must only record usage once.   
+
+Pochi
+💭 Thinking for 88 characters   
+📂 Listing files in /home/user/myproject ✔ 
+📖 Reading /home/user/myproject/package.json ✔ 
+🔍 Searching for **/*.d.ts in /home/user/myproject/node_modules/autumn-js ✔ 
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+🔍 Searching for track|customers in *.d.ts files in /home/user/myproject/node_modules/autumn-js/dist/sdk ✔ 
+Now I have a clear picture of the SDK. Let me look at `TrackParams` specifically to confirm the `idempotencyKey` field name:   
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+The `TrackParams` type doesn't include `idempotencyKey` directly. Let me check the `track` method signature and `RequestOptions` to see how idempotency key is passed:   
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+🔍 Searching for RequestOptions|idempotency in *.d.ts files in /home/user/myproject/node_modules/autumn-js/dist/sdk ✔ 
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+The `RequestOptions` extends `RequestInit`, so I can pass custom headers including `Idempotency-Key`. Now let me check how the `Autumn` class is instantiated (the top-level `track` method):   
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+Now I have everything I need. The `track` method is on the top-level `Autumn` instance (not `autumn.customers.track`). The idempotency key is passed via HTTP headers in `RequestOptions` (since it extends `RequestInit`). Let me also check whether the SDK has a `customers.track` method to match the task requirement:   
+🔍 Searching for class Customers in *.d.ts files in /home/user/myproject/node_modules/autumn-js/dist/sdk ✔ 
+📖 Reading /home/user/myproject/node_modules/autumn-js/dist/sdk/index.d.ts ✔ 
+The `Customers` class does NOT have a `track` method — it's only on the top-level `Autumn` instance. The task asks to call `autumn.customers.track`, but the SDK exposes it as `autumn.track`. I'll use `autumn.track` (which is the correct SDK call) and name it clearly in the script. The idempotency key is passed as an HTTP header `Idempotency-Key` via `RequestOptions`.   
+✏️  Writing /home/user/myproject/track_usage.js ✔ 
+💫 Executing cd /home/user/myproject && node track_usage.js ✔ 
+The script ran successfully. Let me verify idempotency by running it again with the same key:   
+💫 Executing cd /home/user/myproject && IDEMPOTENCY_KEY=test-idempotency-key-abc123 node track_usage.js && echo "---" && IDEMPOTENCY_KEY=test-idempotency-key-abc123 node track_usage.js ✖ "Command exited with code 1"
+Idempotency is confirmed working — the second call with the same key is rejected with HTTP 409 `duplicate_idempotency_key`. This is exactly the correct behaviour: the server rejects the duplicate instead of recording usage twice. Let me update the script to handle this 409 gracefully (returning the original result instead of crashing on retry):   
+✏️  Writing /home/user/myproject/track_usage.js ✔ 
+💫 Executing cd /home/user/myproject && node track_usage.js && echo "--- second run (same key) ---" && IDEMPOTENCY_KEY=idempotency-final-test-xyz node track_usage.js && echo "--- repeat (duplicate) ---" && IDEMPOTENCY_KEY=idempotency-final-test-xyz node track_usage.js ✔ 
+Everything works perfectly. Let me verify the saved output file:   
+📖 Reading /home/user/myproject/track_result.json ✔ 
+🎉 Task Completed
+`/home/user/myproject/track_usage.js` is created and fully working. Here's a summary of what it does:
+
+### How it works
+
+1. **Idempotency key** — uses `process.env.IDEMPOTENCY_KEY` if set, otherwise generates a fresh `crypto.randomUUID()` on every run.
+
+2. **Tracking** — calls `autumn.track()` with:
+   - `customerId: "user_test_001"`
+   - `featureId: "api-calls"`
+   - `value: 1`
+   - `Idempotency-Key` HTTP header passed via `RequestOptions.headers`
+
+3. **Duplicate protection** — if Autumn returns HTTP 409 `duplicate_idempotency_key`, the error is caught gracefully. The script logs a clear message and exits cleanly without throwing, so callers know the event was already recorded and no double-billing occurred.
+
+4. **Output** — writes `{ idempotencyKey, result }` to `track_result.json` in the project directory.
+
+### Usage
+
+```bash
+# Normal run — generates a new UUID each time
+node track_usage.js
+
+# Idempotent retry — same key is safe to repeat; second call is a no-op
+IDEMPOTENCY_KEY=my-unique-request-id node track_usage.js
+IDEMPOTENCY_KEY=my-unique-request-id node track_usage.js  # deduped, no double charge
+```
+
+### Key implementation detail
+
+The `autumn-js` SDK's `TrackParams` type does not include an `idempotencyKey` field directly. Instead, the key is sent as the standard `Idempotency-Key` HTTP header via the second `RequestOptions` argument (which extends `RequestInit`, allowing custom headers). Autumn's server enforces deduplication by returning 409 for any repeated key within its deduplication window.   
+  

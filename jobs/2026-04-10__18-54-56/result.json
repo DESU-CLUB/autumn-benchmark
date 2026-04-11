@@ -1,0 +1,40 @@
+{
+    "id": "15a0e49d-2ffb-482e-9729-4f281fbc6fda",
+    "started_at": "2026-04-10T18:54:59.232215",
+    "finished_at": "2026-04-10T18:58:43.874085",
+    "n_total_trials": 10,
+    "stats": {
+        "n_trials": 10,
+        "n_errors": 0,
+        "evals": {
+            "pochi__gpt-5.2-codex__autumn-tasks": {
+                "n_trials": 10,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 0.2
+                    }
+                ],
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "get_or_create_customer__F92YW3A",
+                            "balance_locking_ai_generation__YQTM3oq",
+                            "boolean_feature_gate__GnS5TDj",
+                            "usage_quota_hard_limit__z2QaUYX",
+                            "track_usage_with_idempotency__6AsTCD6",
+                            "entity_workspace_limits__Y2kAj4V",
+                            "preview_plan_upgrade__nFfoA8y",
+                            "fail_open_resilient_check__JBaLZ86"
+                        ],
+                        "1.0": [
+                            "attach_plan_to_customer__ZvAV2ek",
+                            "check_feature_access__H2m86Ei"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}

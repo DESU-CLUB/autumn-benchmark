@@ -1,0 +1,42 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 6ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/pstrNAVlYZrUVQp2mKqjh/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 9 items
+
+../../tests/test_final_state.py::test_onboard_script_exists PASSED       [ 11%]
+../../tests/test_final_state.py::test_script_uses_promise_all PASSED     [ 22%]
+../../tests/test_final_state.py::test_script_creates_both_customers PASSED [ 33%]
+../../tests/test_final_state.py::test_script_attaches_free_plan PASSED   [ 44%]
+../../tests/test_final_state.py::test_result_file_exists PASSED          [ 55%]
+../../tests/test_final_state.py::test_result_is_valid_json PASSED        [ 66%]
+../../tests/test_final_state.py::test_result_has_customers_array PASSED  [ 77%]
+../../tests/test_final_state.py::test_result_customers_have_plan_attached PASSED [ 88%]
+../../tests/test_final_state.py::test_result_customers_have_correct_ids PASSED [100%]
+
+============================== 9 passed in 0.01s ===============================

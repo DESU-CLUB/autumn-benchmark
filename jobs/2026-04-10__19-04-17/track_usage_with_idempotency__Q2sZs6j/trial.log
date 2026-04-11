@@ -1,0 +1,78 @@
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model google/gemini-3.1-pro --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Track Usage with Idempotency using Autumn
+
+Write a Node.js script that records a usage event with Autumn's `track` endpoint using an idempotency key to prevent duplicate billing on retries.
+
+Implement the following at `/home/user/myproject`:
+
+- `track_usage.js` — Generates a unique idempotency key, tracks 1 unit of `"api-calls"` for `user_test_001`, and saves the result to `track_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node track_usage.js`.
+
+The script must:
+1. Generate a unique `idempotencyKey` using `crypto.randomUUID()`, or use `process.env.IDEMPOTENCY_KEY` if set.
+2. Call `autumn.customers.track` with:
+   - `customerId`: `"user_test_001"`
+   - `featureId`: `"api-calls"`
+   - `value`: `1`
+   - `idempotencyKey`: the generated key
+3. Save the returned result to `/home/user/myproject/track_result.json`.
+4. Be idempotency-safe: running twice with the same `IDEMPOTENCY_KEY` env variable must only record usage once.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured

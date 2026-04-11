@@ -1,0 +1,18 @@
+# Get or Create a Customer with Autumn
+
+Write a Node.js script that syncs a customer record with Autumn using `customers.getOrCreate` and saves the result to a JSON file.
+
+Implement the following at `/home/user/myproject`:
+
+- `create_customer.js` — Initializes the Autumn SDK, calls `customers.getOrCreate`, prints the result as JSON to stdout, and saves output to `output.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node create_customer.js > output.json`.
+
+The script must:
+1. Initialize `Autumn` with `process.env.AUTUMN_SECRET_KEY`.
+2. Call `autumn.customers.getOrCreate` with:
+   - `customerId`: `"user_test_001"`
+   - `name`: `"Alice Testuser"`
+   - `email`: `"alice@example.com"`
+3. Print the returned customer object as JSON to stdout.
+4. Use ES module syntax (`import`). The `package.json` already has `"type": "module"`.

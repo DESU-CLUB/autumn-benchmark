@@ -1,0 +1,82 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 3ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/QhQnGORbsvBfqr8mtS8NN/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 11 items
+
+../../tests/test_final_state.py::test_billing_route_file_exists PASSED   [  9%]
+../../tests/test_final_state.py::test_billing_route_has_preview_upgrade PASSED [ 18%]
+../../tests/test_final_state.py::test_billing_route_has_confirm_upgrade PASSED [ 27%]
+../../tests/test_final_state.py::test_billing_route_has_batch_check PASSED [ 36%]
+../../tests/test_final_state.py::test_billing_route_uses_preview_attach PASSED [ 45%]
+../../tests/test_final_state.py::test_billing_route_uses_promise_all PASSED [ 54%]
+../../tests/test_final_state.py::test_index_mounts_billing_router PASSED [ 63%]
+../../tests/test_final_state.py::test_preview_upgrade_missing_body_returns_400 PASSED [ 72%]
+../../tests/test_final_state.py::test_preview_upgrade_returns_200_or_502 PASSED [ 81%]
+../../tests/test_final_state.py::test_confirm_upgrade_cancelled_returns_200 PASSED [ 90%]
+../../tests/test_final_state.py::test_batch_check_returns_results_array FAILED [100%]
+
+=================================== FAILURES ===================================
+____________________ test_batch_check_returns_results_array ____________________
+
+start_server = None
+
+    def test_batch_check_returns_results_array(start_server):
+        result = subprocess.run(
+            ["curl", "-s", "-w", "\n%{http_code}",
+             "-X", "POST", "http://localhost:3000/billing/batch-check",
+             "-H", "Content-Type: application/json",
+             "-d", '{"customerIds": ["user_test_001", "user_test_002"], "featureId": "messages"}'],
+            capture_output=True, text=True,
+        )
+        lines = result.stdout.strip().split("\n")
+        code = lines[-1]
+        body = "\n".join(lines[:-1])
+>       assert code == "200", (
+            f"POST /billing/batch-check must return HTTP 200, got: {code}. Body: {body}"
+        )
+E       AssertionError: POST /billing/batch-check must return HTTP 200, got: 500. Body: <!DOCTYPE html>
+E         <html lang="en">
+E         <head>
+E         <meta charset="utf-8">
+E         <title>Error</title>
+E         </head>
+E         <body>
+E         <pre>TypeError: autumn.customers.check is not a function<br> &nbsp; &nbsp;at file:///home/user/myproject/routes/billing.js:63:47<br> &nbsp; &nbsp;at Array.map (&lt;anonymous&gt;)<br> &nbsp; &nbsp;at file:///home/user/myproject/routes/billing.js:62:17<br> &nbsp; &nbsp;at Layer.handleRequest (/home/user/myproject/node_modules/router/lib/layer.js:152:17)<br> &nbsp; &nbsp;at next (/home/user/myproject/node_modules/router/lib/route.js:157:13)<br> &nbsp; &nbsp;at Route.dispatch (/home/user/myproject/node_modules/router/lib/route.js:117:3)<br> &nbsp; &nbsp;at handle (/home/user/myproject/node_modules/router/index.js:435:11)<br> &nbsp; &nbsp;at Layer.handleRequest (/home/user/myproject/node_modules/router/lib/layer.js:152:17)<br> &nbsp; &nbsp;at /home/user/myproject/node_modules/router/index.js:295:15<br> &nbsp; &nbsp;at processParams (/home/user/myproject/node_modules/router/index.js:582:12)</pre>
+E         </body>
+E         </html>
+E         
+E       assert '500' == '200'
+E         
+E         - 200
+E         + 500
+
+/tests/test_final_state.py:156: AssertionError
+=========================== short test summary info ============================
+FAILED ../../tests/test_final_state.py::test_batch_check_returns_results_array
+========================= 1 failed, 10 passed in 1.06s =========================

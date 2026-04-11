@@ -1,0 +1,92 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 10ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/7W1a32g3jbNEP5a1ViXDJ/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 13 items
+
+../../tests/test_final_state.py::test_ai_generator_exists PASSED         [  7%]
+../../tests/test_final_state.py::test_ai_generator_exports_generate_with_budget PASSED [ 15%]
+../../tests/test_final_state.py::test_ai_generator_uses_balance_lock PASSED [ 23%]
+../../tests/test_final_state.py::test_ai_generator_calls_finalize_confirm PASSED [ 30%]
+../../tests/test_final_state.py::test_ai_generator_calls_finalize_release PASSED [ 38%]
+../../tests/test_final_state.py::test_ai_generator_uses_override_value PASSED [ 46%]
+../../tests/test_final_state.py::test_ai_generator_uses_ai_tokens_feature PASSED [ 53%]
+../../tests/test_final_state.py::test_run_script_exists PASSED           [ 61%]
+../../tests/test_final_state.py::test_generation_result_exists PASSED    [ 69%]
+../../tests/test_final_state.py::test_generation_result_is_valid_json PASSED [ 76%]
+../../tests/test_final_state.py::test_generation_result_has_confirmed_true FAILED [ 84%]
+../../tests/test_final_state.py::test_generation_result_has_lock_id FAILED [ 92%]
+../../tests/test_final_state.py::test_generation_result_has_tokens_used FAILED [100%]
+
+=================================== FAILURES ===================================
+__________________ test_generation_result_has_confirmed_true ___________________
+
+    def test_generation_result_has_confirmed_true():
+        with open(RESULT_FILE) as f:
+            data = json.load(f)
+>       assert data.get("confirmed") is True, (
+            f"generation_result.json must have confirmed: true, got: {data}"
+        )
+E       AssertionError: generation_result.json must have confirmed: true, got: {'error': 'API error occurred: Status 400\nBody: {"message":"Lock not found for ID: completion_1fca1513-ca6d-45e2-b4bd-9a932f9478b2","code":"invalid_request","env":"sandbox"}', 'confirmed': False}
+E       assert False is True
+E        +  where False = <built-in method get of dict object at 0xf705a5d41f40>('confirmed')
+E        +    where <built-in method get of dict object at 0xf705a5d41f40> = {'confirmed': False, 'error': 'API error occurred: Status 400\nBody: {"message":"Lock not found for ID: completion_1fca1513-ca6d-45e2-b4bd-9a932f9478b2","code":"invalid_request","env":"sandbox"}'}.get
+
+/tests/test_final_state.py:97: AssertionError
+______________________ test_generation_result_has_lock_id ______________________
+
+    def test_generation_result_has_lock_id():
+        with open(RESULT_FILE) as f:
+            data = json.load(f)
+        lock_id = data.get("lockId") or data.get("lock_id")
+>       assert lock_id is not None and lock_id.startswith("completion_"), (
+            f"generation_result.json must have lockId starting with 'completion_', got: {lock_id}"
+        )
+E       AssertionError: generation_result.json must have lockId starting with 'completion_', got: None
+E       assert (None is not None)
+
+/tests/test_final_state.py:106: AssertionError
+____________________ test_generation_result_has_tokens_used ____________________
+
+    def test_generation_result_has_tokens_used():
+        with open(RESULT_FILE) as f:
+            data = json.load(f)
+        tokens_used = data.get("tokensUsed") or data.get("tokens_used")
+>       assert isinstance(tokens_used, int) and tokens_used > 0, (
+            f"generation_result.json must have tokensUsed as a positive integer, got: {tokens_used}"
+        )
+E       AssertionError: generation_result.json must have tokensUsed as a positive integer, got: None
+E       assert (False)
+E        +  where False = isinstance(None, int)
+
+/tests/test_final_state.py:115: AssertionError
+=========================== short test summary info ============================
+FAILED ../../tests/test_final_state.py::test_generation_result_has_confirmed_true
+FAILED ../../tests/test_final_state.py::test_generation_result_has_lock_id - ...
+FAILED ../../tests/test_final_state.py::test_generation_result_has_tokens_used
+========================= 3 failed, 10 passed in 0.02s =========================

@@ -1,0 +1,38 @@
+{
+    "id": "394b3829-bf51-438a-9f5b-e7e9fac5761c",
+    "started_at": "2026-04-10T18:24:22.836341",
+    "finished_at": null,
+    "n_total_trials": 10,
+    "stats": {
+        "n_trials": 6,
+        "n_errors": 3,
+        "evals": {
+            "pochi__glm-4.7__autumn-tasks": {
+                "n_trials": 3,
+                "n_errors": 3,
+                "metrics": [
+                    {
+                        "mean": 0.0
+                    }
+                ],
+                "reward_stats": {
+                    "reward": {
+                        "0.0": [
+                            "boolean_feature_gate__6fsbeWQ",
+                            "get_or_create_customer__krW3neM",
+                            "balance_locking_ai_generation__65M8ELP"
+                        ]
+                    }
+                },
+                "exception_stats": {
+                    "CancelledError": [
+                        "attach_plan_to_customer__kBtr7GS",
+                        "usage_quota_hard_limit__ZzpPdM3",
+                        "track_usage_with_idempotency__C6eaBWt"
+                    ]
+                }
+            }
+        }
+    },
+    "trial_results": []
+}

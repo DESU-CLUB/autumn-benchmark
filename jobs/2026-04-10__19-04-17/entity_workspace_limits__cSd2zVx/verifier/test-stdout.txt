@@ -1,0 +1,196 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 9ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/d1HH5QbNSVjo6v_nhvRsY/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 12 items
+
+../../tests/test_final_state.py::test_lib_autumn_exists FAILED           [  8%]
+../../tests/test_final_state.py::test_lib_autumn_initializes_sdk FAILED  [ 16%]
+../../tests/test_final_state.py::test_workspaces_route_exists FAILED     [ 25%]
+../../tests/test_final_state.py::test_workspaces_route_has_create FAILED [ 33%]
+../../tests/test_final_state.py::test_workspaces_route_has_check_with_entity_id FAILED [ 41%]
+../../tests/test_final_state.py::test_workspaces_route_has_track FAILED  [ 50%]
+../../tests/test_final_state.py::test_workspaces_route_has_delete FAILED [ 58%]
+../../tests/test_final_state.py::test_workspaces_route_has_get_balance FAILED [ 66%]
+../../tests/test_final_state.py::test_index_mounts_workspaces_router PASSED [ 75%]
+../../tests/test_final_state.py::test_create_workspace_returns_created FAILED [ 83%]
+../../tests/test_final_state.py::test_use_credits_returns_200_or_402 FAILED [ 91%]
+../../tests/test_final_state.py::test_delete_workspace_returns_deleted FAILED [100%]
+
+=================================== FAILURES ===================================
+____________________________ test_lib_autumn_exists ____________________________
+
+    def test_lib_autumn_exists():
+>       assert os.path.isfile(LIB_AUTUMN), (
+            f"lib/autumn.js not found at {LIB_AUTUMN}. Create it to export the Autumn SDK instance."
+        )
+E       AssertionError: lib/autumn.js not found at /home/user/myproject/lib/autumn.js. Create it to export the Autumn SDK instance.
+E       assert False
+E        +  where False = <function isfile at 0xeb0d9a8d0220>('/home/user/myproject/lib/autumn.js')
+E        +    where <function isfile at 0xeb0d9a8d0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:43: AssertionError
+_______________________ test_lib_autumn_initializes_sdk ________________________
+
+    def test_lib_autumn_initializes_sdk():
+>       with open(LIB_AUTUMN) as f:
+             ^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/lib/autumn.js'
+
+/tests/test_final_state.py:49: FileNotFoundError
+_________________________ test_workspaces_route_exists _________________________
+
+    def test_workspaces_route_exists():
+>       assert os.path.isfile(WORKSPACES_ROUTE), (
+            f"routes/workspaces.js not found at {WORKSPACES_ROUTE}."
+        )
+E       AssertionError: routes/workspaces.js not found at /home/user/myproject/routes/workspaces.js.
+E       assert False
+E        +  where False = <function isfile at 0xeb0d9a8d0220>('/home/user/myproject/routes/workspaces.js')
+E        +    where <function isfile at 0xeb0d9a8d0220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:60: AssertionError
+_______________________ test_workspaces_route_has_create _______________________
+
+    def test_workspaces_route_has_create():
+>       with open(WORKSPACES_ROUTE) as f:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/routes/workspaces.js'
+
+/tests/test_final_state.py:66: FileNotFoundError
+________________ test_workspaces_route_has_check_with_entity_id ________________
+
+    def test_workspaces_route_has_check_with_entity_id():
+>       with open(WORKSPACES_ROUTE) as f:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/routes/workspaces.js'
+
+/tests/test_final_state.py:74: FileNotFoundError
+_______________________ test_workspaces_route_has_track ________________________
+
+    def test_workspaces_route_has_track():
+>       with open(WORKSPACES_ROUTE) as f:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/routes/workspaces.js'
+
+/tests/test_final_state.py:82: FileNotFoundError
+_______________________ test_workspaces_route_has_delete _______________________
+
+    def test_workspaces_route_has_delete():
+>       with open(WORKSPACES_ROUTE) as f:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/routes/workspaces.js'
+
+/tests/test_final_state.py:90: FileNotFoundError
+____________________ test_workspaces_route_has_get_balance _____________________
+
+    def test_workspaces_route_has_get_balance():
+>       with open(WORKSPACES_ROUTE) as f:
+             ^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/routes/workspaces.js'
+
+/tests/test_final_state.py:98: FileNotFoundError
+____________________ test_create_workspace_returns_created _____________________
+
+start_server = None
+
+    def test_create_workspace_returns_created(start_server):
+        result = subprocess.run(
+            ["curl", "-s", "-w", "\n%{http_code}",
+             "-X", "POST", "http://localhost:3000/workspaces",
+             "-H", "Content-Type: application/json",
+             "-d", '{"orgId": "org_001", "workspaceId": "ws_001", "workspaceName": "Engineering"}'],
+            capture_output=True, text=True,
+        )
+        lines = result.stdout.strip().split("\n")
+        code = lines[-1]
+        body = "\n".join(lines[:-1])
+>       assert code in ("200", "201", "502"), (
+            f"POST /workspaces must return 200, 201, or 502, got: {code}. Body: {body}"
+        )
+E       AssertionError: POST /workspaces must return 200, 201, or 502, got: 400. Body: {"error":"workspaceId and customerId are required"}
+E       assert '400' in ('200', '201', '502')
+
+/tests/test_final_state.py:124: AssertionError
+_____________________ test_use_credits_returns_200_or_402 ______________________
+
+start_server = None
+
+    def test_use_credits_returns_200_or_402(start_server):
+        result = subprocess.run(
+            ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
+             "-X", "POST", "http://localhost:3000/workspaces/ws_001/use-credits",
+             "-H", "Content-Type: application/json",
+             "-d", '{"orgId": "org_001", "amount": 5}'],
+            capture_output=True, text=True,
+        )
+        code = result.stdout.strip()
+>       assert code in ("200", "402", "502"), (
+            f"POST /workspaces/ws_001/use-credits must return 200, 402, or 502, got: {code}"
+        )
+E       AssertionError: POST /workspaces/ws_001/use-credits must return 200, 402, or 502, got: 404
+E       assert '404' in ('200', '402', '502')
+
+/tests/test_final_state.py:146: AssertionError
+____________________ test_delete_workspace_returns_deleted _____________________
+
+start_server = None
+
+    def test_delete_workspace_returns_deleted(start_server):
+        result = subprocess.run(
+            ["curl", "-s", "-w", "\n%{http_code}",
+             "-X", "DELETE", "http://localhost:3000/workspaces/ws_001",
+             "-H", "Content-Type: application/json",
+             "-d", '{"orgId": "org_001"}'],
+            capture_output=True, text=True,
+        )
+        lines = result.stdout.strip().split("\n")
+        code = lines[-1]
+        body = "\n".join(lines[:-1])
+>       assert code in ("200", "404", "502"), (
+            f"DELETE /workspaces/ws_001 must return 200, 404, or 502, got: {code}. Body: {body}"
+        )
+E       AssertionError: DELETE /workspaces/ws_001 must return 200, 404, or 502, got: 500. Body: {"error":"API error occurred: Status 500. Body: {\"message\":\"No entities found for entityId ws_001\",\"code\":\"internal_error\",\"env\":\"sandbox\"}"}
+E       assert '500' in ('200', '404', '502')
+
+/tests/test_final_state.py:162: AssertionError
+=========================== short test summary info ============================
+FAILED ../../tests/test_final_state.py::test_lib_autumn_exists - AssertionErr...
+FAILED ../../tests/test_final_state.py::test_lib_autumn_initializes_sdk - Fil...
+FAILED ../../tests/test_final_state.py::test_workspaces_route_exists - Assert...
+FAILED ../../tests/test_final_state.py::test_workspaces_route_has_create - Fi...
+FAILED ../../tests/test_final_state.py::test_workspaces_route_has_check_with_entity_id
+FAILED ../../tests/test_final_state.py::test_workspaces_route_has_track - Fil...
+FAILED ../../tests/test_final_state.py::test_workspaces_route_has_delete - Fi...
+FAILED ../../tests/test_final_state.py::test_workspaces_route_has_get_balance
+FAILED ../../tests/test_final_state.py::test_create_workspace_returns_created
+FAILED ../../tests/test_final_state.py::test_use_credits_returns_200_or_402
+FAILED ../../tests/test_final_state.py::test_delete_workspace_returns_deleted
+========================= 11 failed, 1 passed in 1.40s =========================

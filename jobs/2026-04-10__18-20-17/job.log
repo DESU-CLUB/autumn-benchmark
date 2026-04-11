@@ -1,0 +1,408 @@
+Running command: apt-get update && apt-get install -y curl ripgrep
+Running command: apt-get update && apt-get install -y curl ripgrep
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model zai/glm-4.7 --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# AI Generation with Balance Locking using Autumn
+
+Build a Node.js module that simulates an AI completion flow using Autumn's balance locking pattern to safely reserve and confirm token usage.
+
+Implement the following at `/home/user/myproject`:
+
+- `ai_generator.js` — Exports `generateWithBudget(customerId, maxTokens)` implementing the lock → work → finalize pattern
+- `run_generation.js` — Calls `generateWithBudget('user_test_001', 1000)` and writes the result to `generation_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node run_generation.js`.
+
+`generateWithBudget(customerId, maxTokens)` must:
+1. Generate a unique `lockId` like `completion_<uuid>`.
+2. Call `autumn.customers.check` with `featureId: 'ai-tokens'`, `requiredBalance: maxTokens`, `sendEvent: true`, and `lock: { enabled: true, lockId, expiresAt: Date.now() + 60000 }`.
+3. If `allowed` is `false`, throw `Error('Insufficient ai-tokens balance')`.
+4. Simulate AI work (100ms delay) returning `tokensUsed = Math.floor(maxTokens * 0.75)`.
+5. Call `autumn.balances.finalize({ lockId, action: 'confirm', overrideValue: tokensUsed })`.
+6. Return `{ lockId, tokensUsed, confirmed: true }`.
+7. On error during the work phase, call `autumn.balances.finalize({ lockId, action: 'release' })` and re-throw.
+
+EOF
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model zai/glm-4.7 --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Boolean Feature Gate for Premium Dashboard using Autumn
+
+Build an Express.js middleware and route that gates access to a premium dashboard using Autumn's boolean feature check.
+
+Implement the following at `/home/user/myproject`:
+
+- `middleware/auth.js` — Exports `requirePremium` middleware
+- `routes/dashboard.js` — Protected `GET /dashboard/premium` route
+- Update `index.js` to mount the dashboard router under `/dashboard`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+`requirePremium` middleware must:
+- Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent.
+- Call `autumn.customers.check({ customerId, featureId: 'premium-dashboard' })`.
+- Call `next()` if `allowed` is `true`.
+- Return HTTP 403 with `{ "error": "Premium plan required" }` if `allowed` is `false`.
+
+`GET /dashboard/premium` must:
+- Use the `requirePremium` middleware.
+- Return `{ "data": "Premium dashboard content", "customerId": "<customerId>" }` on success.
+
+EOF
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model zai/glm-4.7 --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Get or Create a Customer with Autumn
+
+Write a Node.js script that syncs a customer record with Autumn using `customers.getOrCreate` and saves the result to a JSON file.
+
+Implement the following at `/home/user/myproject`:
+
+- `create_customer.js` — Initializes the Autumn SDK, calls `customers.getOrCreate`, prints the result as JSON to stdout, and saves output to `output.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node create_customer.js > output.json`.
+
+The script must:
+1. Initialize `Autumn` with `process.env.AUTUMN_SECRET_KEY`.
+2. Call `autumn.customers.getOrCreate` with:
+   - `customerId`: `"user_test_001"`
+   - `name`: `"Alice Testuser"`
+   - `email`: `"alice@example.com"`
+3. Print the returned customer object as JSON to stdout.
+4. Use ES module syntax (`import`). The `package.json` already has `"type": "module"`.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured
+The verifier.env contains an API key (often the case for LLM-based verifiers). You will incur costs associated with the API calls.
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model zai/glm-4.7 --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Attach a Plan to a Customer with Autumn
+
+Build a Node.js billing onboarding script that creates customers and attaches a free plan to them using Autumn's `attach` endpoint.
+
+Implement the following at `/home/user/myproject`:
+
+- `onboard_customer.js` — Creates two customers in parallel and attaches the `"free"` plan to both, then writes the result to `onboard_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node onboard_customer.js`.
+
+Steps to perform **in parallel where possible**:
+1. Create/sync customer `user_test_001` (`"Bob Builder"`, `bob@example.com`) and `user_test_002` (`"Carol Coder"`, `carol@example.com`) using `autumn.customers.getOrCreate` with `Promise.all`.
+2. After both customers are created, attach the plan `"free"` to both in parallel using `autumn.attach({ customerId, productId: 'free' })`.
+3. Save results to `/home/user/myproject/onboard_result.json`:
+   ```json
+   {
+     "customers": [
+       { "customerId": "user_test_001", "planAttached": true },
+       { "customerId": "user_test_002", "planAttached": true }
+     ]
+   }
+   ```
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured
+The verifier.env contains an API key (often the case for LLM-based verifiers). You will incur costs associated with the API calls.
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model zai/glm-4.7 --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Usage-Based Metering with Hard Quota Limit using Autumn
+
+Build an Express.js API metering middleware and route that enforces a hard usage quota using Autumn's `check` and `track` endpoints.
+
+Implement the following at `/home/user/myproject`:
+
+- `middleware/rateLimit.js` — Exports `checkApiQuota` middleware
+- `routes/api.js` — `POST /api/process` route protected by the quota middleware
+- Update `index.js` to mount the API router under `/api`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.
+
+`checkApiQuota` middleware must:
+- Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent.
+- Call `autumn.customers.check({ customerId, featureId: 'api-requests' })`.
+- If `allowed` is `false`, return HTTP 429 with `{ "error": "API quota exceeded", "allowed": false }`.
+- If `allowed` is `true`, call `autumn.customers.track({ customerId, featureId: 'api-requests', value: 1 })` then call `next()`.
+
+`POST /api/process` must:
+- Use the `checkApiQuota` middleware.
+- Accept a JSON body with a `payload` field.
+- Return `{ "result": "processed", "payload": "<value>", "customerId": "<id>" }`.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured
+The verifier.env contains an API key (often the case for LLM-based verifiers). You will incur costs associated with the API calls.
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Trial usage_quota_hard_limit__ZzpPdM3 cancelled
+Trial track_usage_with_idempotency__C6eaBWt cancelled
+Command outputs captured
+Trial attach_plan_to_customer__kBtr7GS cancelled
+Cleanup interrupted for attach_plan_to_customer__kBtr7GS, but environment stop is shielded and will complete
+Cleanup interrupted for usage_quota_hard_limit__ZzpPdM3, but environment stop is shielded and will complete
+Cleanup interrupted for track_usage_with_idempotency__C6eaBWt, but environment stop is shielded and will complete

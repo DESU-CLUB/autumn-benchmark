@@ -1,0 +1,98 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 9ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/p_r8QUOjUiSkc1JIHUvKR/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 13 items
+
+../../tests/test_final_state.py::test_ai_generator_exists PASSED         [  7%]
+../../tests/test_final_state.py::test_ai_generator_exports_generate_with_budget PASSED [ 15%]
+../../tests/test_final_state.py::test_ai_generator_uses_balance_lock PASSED [ 23%]
+../../tests/test_final_state.py::test_ai_generator_calls_finalize_confirm PASSED [ 30%]
+../../tests/test_final_state.py::test_ai_generator_calls_finalize_release PASSED [ 38%]
+../../tests/test_final_state.py::test_ai_generator_uses_override_value PASSED [ 46%]
+../../tests/test_final_state.py::test_ai_generator_uses_ai_tokens_feature PASSED [ 53%]
+../../tests/test_final_state.py::test_run_script_exists PASSED           [ 61%]
+../../tests/test_final_state.py::test_generation_result_exists FAILED    [ 69%]
+../../tests/test_final_state.py::test_generation_result_is_valid_json FAILED [ 76%]
+../../tests/test_final_state.py::test_generation_result_has_confirmed_true FAILED [ 84%]
+../../tests/test_final_state.py::test_generation_result_has_lock_id FAILED [ 92%]
+../../tests/test_final_state.py::test_generation_result_has_tokens_used FAILED [100%]
+
+=================================== FAILURES ===================================
+________________________ test_generation_result_exists _________________________
+
+    def test_generation_result_exists():
+>       assert os.path.isfile(RESULT_FILE), (
+            f"generation_result.json not found at {RESULT_FILE}. Run 'node run_generation.js'."
+        )
+E       AssertionError: generation_result.json not found at /home/user/myproject/generation_result.json. Run 'node run_generation.js'.
+E       assert False
+E        +  where False = <function isfile at 0xe9e858a50220>('/home/user/myproject/generation_result.json')
+E        +    where <function isfile at 0xe9e858a50220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:81: AssertionError
+_____________________ test_generation_result_is_valid_json _____________________
+
+    def test_generation_result_is_valid_json():
+>       with open(RESULT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/generation_result.json'
+
+/tests/test_final_state.py:87: FileNotFoundError
+__________________ test_generation_result_has_confirmed_true ___________________
+
+    def test_generation_result_has_confirmed_true():
+>       with open(RESULT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/generation_result.json'
+
+/tests/test_final_state.py:95: FileNotFoundError
+______________________ test_generation_result_has_lock_id ______________________
+
+    def test_generation_result_has_lock_id():
+>       with open(RESULT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/generation_result.json'
+
+/tests/test_final_state.py:103: FileNotFoundError
+____________________ test_generation_result_has_tokens_used ____________________
+
+    def test_generation_result_has_tokens_used():
+>       with open(RESULT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/generation_result.json'
+
+/tests/test_final_state.py:112: FileNotFoundError
+=========================== short test summary info ============================
+FAILED ../../tests/test_final_state.py::test_generation_result_exists - Asser...
+FAILED ../../tests/test_final_state.py::test_generation_result_is_valid_json
+FAILED ../../tests/test_final_state.py::test_generation_result_has_confirmed_true
+FAILED ../../tests/test_final_state.py::test_generation_result_has_lock_id - ...
+FAILED ../../tests/test_final_state.py::test_generation_result_has_tokens_used
+========================= 5 failed, 8 passed in 0.02s ==========================

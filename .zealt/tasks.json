@@ -1,0 +1,880 @@
+{
+  "balance_locking_ai_generation": {
+    "instruction": "# AI Generation with Balance Locking using Autumn\n\nBuild a Node.js module that simulates an AI completion flow using Autumn's balance locking pattern to safely reserve and confirm token usage.\n\nImplement the following at `/home/user/myproject`:\n\n- `ai_generator.js` — Exports `generateWithBudget(customerId, maxTokens)` implementing the lock → work → finalize pattern\n- `run_generation.js` — Calls `generateWithBudget('user_test_001', 1000)` and writes the result to `generation_result.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node run_generation.js`.\n\n`generateWithBudget(customerId, maxTokens)` must:\n1. Generate a unique `lockId` like `completion_<uuid>`.\n2. Call `autumn.customers.check` with `featureId: 'ai-tokens'`, `requiredBalance: maxTokens`, `sendEvent: true`, and `lock: { enabled: true, lockId, expiresAt: Date.now() + 60000 }`.\n3. If `allowed` is `false`, throw `Error('Insufficient ai-tokens balance')`.\n4. Simulate AI work (100ms delay) returning `tokensUsed = Math.floor(maxTokens * 0.75)`.\n5. Call `autumn.balances.finalize({ lockId, action: 'confirm', overrideValue: tokensUsed })`.\n6. Return `{ lockId, tokensUsed, confirmed: true }`.\n7. On error during the work phase, call `autumn.balances.finalize({ lockId, action: 'release' })` and re-throw.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "balance_locking_ai_generation__p5FPifj",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 191.971,
+        "latency_breakdown": {
+          "env_setup": 7.803,
+          "agent_setup": 47.854,
+          "agent_exec": 118.897,
+          "verifier": 7.054
+        },
+        "tokens": {
+          "input": 0,
+          "output": 97850,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "balance_locking_ai_generation__65M8ELP",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 231.922,
+        "latency_breakdown": {
+          "env_setup": 5.344,
+          "agent_setup": 17.979,
+          "agent_exec": 192.692,
+          "verifier": 5.516
+        },
+        "tokens": {
+          "input": 0,
+          "output": 46891,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "balance_locking_ai_generation__39kAvJ4",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 319.18,
+        "latency_breakdown": {
+          "env_setup": 8.321,
+          "agent_setup": 39.201,
+          "agent_exec": 255.065,
+          "verifier": 6.232
+        },
+        "tokens": {
+          "input": 0,
+          "output": 34345,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "balance_locking_ai_generation__YQTM3oq",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 223.779,
+        "latency_breakdown": {
+          "env_setup": 8.47,
+          "agent_setup": 43.488,
+          "agent_exec": 155.202,
+          "verifier": 6.248
+        },
+        "tokens": {
+          "input": 0,
+          "output": 68441,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "track_usage_with_idempotency": {
+    "instruction": "# Track Usage with Idempotency using Autumn\n\nWrite a Node.js script that records a usage event with Autumn's `track` endpoint using an idempotency key to prevent duplicate billing on retries.\n\nImplement the following at `/home/user/myproject`:\n\n- `track_usage.js` — Generates a unique idempotency key, tracks 1 unit of `\"api-calls\"` for `user_test_001`, and saves the result to `track_result.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node track_usage.js`.\n\nThe script must:\n1. Generate a unique `idempotencyKey` using `crypto.randomUUID()`, or use `process.env.IDEMPOTENCY_KEY` if set.\n2. Call `autumn.customers.track` with:\n   - `customerId`: `\"user_test_001\"`\n   - `featureId`: `\"api-calls\"`\n   - `value`: `1`\n   - `idempotencyKey`: the generated key\n3. Save the returned result to `/home/user/myproject/track_result.json`.\n4. Be idempotency-safe: running twice with the same `IDEMPOTENCY_KEY` env variable must only record usage once.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "track_usage_with_idempotency__7HgH8Qx",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 150.723,
+        "latency_breakdown": {
+          "env_setup": 4.516,
+          "agent_setup": 30.286,
+          "agent_exec": 96.994,
+          "verifier": 8.61
+        },
+        "tokens": {
+          "input": 0,
+          "output": 67311,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "track_usage_with_idempotency__C6eaBWt",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": null,
+        "error": true,
+        "latency_sec": 10.592,
+        "latency_breakdown": {
+          "env_setup": 2.903,
+          "agent_setup": 7.475,
+          "agent_exec": null,
+          "verifier": null
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "track_usage_with_idempotency__Q2sZs6j",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 107.393,
+        "latency_breakdown": {
+          "env_setup": 5.255,
+          "agent_setup": 25.467,
+          "agent_exec": 58.204,
+          "verifier": 8.039
+        },
+        "tokens": {
+          "input": 0,
+          "output": 12494,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "track_usage_with_idempotency__6AsTCD6",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 84.966,
+        "latency_breakdown": {
+          "env_setup": 4.945,
+          "agent_setup": 34.992,
+          "agent_exec": 19.686,
+          "verifier": 14.955
+        },
+        "tokens": {
+          "input": 0,
+          "output": 11353,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "usage_quota_hard_limit": {
+    "instruction": "# Usage-Based Metering with Hard Quota Limit using Autumn\n\nBuild an Express.js API metering middleware and route that enforces a hard usage quota using Autumn's `check` and `track` endpoints.\n\nImplement the following at `/home/user/myproject`:\n\n- `middleware/rateLimit.js` — Exports `checkApiQuota` middleware\n- `routes/api.js` — `POST /api/process` route protected by the quota middleware\n- Update `index.js` to mount the API router under `/api`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n\n`checkApiQuota` middleware must:\n- Read `x-customer-id` from request headers; return HTTP 400 with `{ \"error\": \"Missing customer ID\" }` if absent.\n- Call `autumn.customers.check({ customerId, featureId: 'api-requests' })`.\n- If `allowed` is `false`, return HTTP 429 with `{ \"error\": \"API quota exceeded\", \"allowed\": false }`.\n- If `allowed` is `true`, call `autumn.customers.track({ customerId, featureId: 'api-requests', value: 1 })` then call `next()`.\n\n`POST /api/process` must:\n- Use the `checkApiQuota` middleware.\n- Accept a JSON body with a `payload` field.\n- Return `{ \"result\": \"processed\", \"payload\": \"<value>\", \"customerId\": \"<id>\" }`.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "usage_quota_hard_limit__Mqzu82P",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 164.447,
+        "latency_breakdown": {
+          "env_setup": 4.582,
+          "agent_setup": 36.942,
+          "agent_exec": 73.962,
+          "verifier": 38.603
+        },
+        "tokens": {
+          "input": 0,
+          "output": 34649,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "usage_quota_hard_limit__ZzpPdM3",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": null,
+        "error": true,
+        "latency_sec": 77.515,
+        "latency_breakdown": {
+          "env_setup": 3.003,
+          "agent_setup": 15.672,
+          "agent_exec": 58.605,
+          "verifier": 0.011
+        },
+        "tokens": {
+          "input": 0,
+          "output": 15290,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "usage_quota_hard_limit__JMkvdsg",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 164.288,
+        "latency_breakdown": {
+          "env_setup": 5.26,
+          "agent_setup": 36.523,
+          "agent_exec": 74.33,
+          "verifier": 37.827
+        },
+        "tokens": {
+          "input": 0,
+          "output": 13538,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "usage_quota_hard_limit__z2QaUYX",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 117.274,
+        "latency_breakdown": {
+          "env_setup": 5.032,
+          "agent_setup": 42.665,
+          "agent_exec": 51.181,
+          "verifier": 8.047
+        },
+        "tokens": {
+          "input": 0,
+          "output": 56451,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "boolean_feature_gate": {
+    "instruction": "# Boolean Feature Gate for Premium Dashboard using Autumn\n\nBuild an Express.js middleware and route that gates access to a premium dashboard using Autumn's boolean feature check.\n\nImplement the following at `/home/user/myproject`:\n\n- `middleware/auth.js` — Exports `requirePremium` middleware\n- `routes/dashboard.js` — Protected `GET /dashboard/premium` route\n- Update `index.js` to mount the dashboard router under `/dashboard`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n\n`requirePremium` middleware must:\n- Read `x-customer-id` from request headers; return HTTP 400 with `{ \"error\": \"Missing customer ID\" }` if absent.\n- Call `autumn.customers.check({ customerId, featureId: 'premium-dashboard' })`.\n- Call `next()` if `allowed` is `true`.\n- Return HTTP 403 with `{ \"error\": \"Premium plan required\" }` if `allowed` is `false`.\n\n`GET /dashboard/premium` must:\n- Use the `requirePremium` middleware.\n- Return `{ \"data\": \"Premium dashboard content\", \"customerId\": \"<customerId>\" }` on success.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "boolean_feature_gate__EVfUW8f",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 165.519,
+        "latency_breakdown": {
+          "env_setup": 7.822,
+          "agent_setup": 41.912,
+          "agent_exec": 98.417,
+          "verifier": 7.016
+        },
+        "tokens": {
+          "input": 0,
+          "output": 75589,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "boolean_feature_gate__6fsbeWQ",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 126.979,
+        "latency_breakdown": {
+          "env_setup": 5.343,
+          "agent_setup": 18.94,
+          "agent_exec": 83.484,
+          "verifier": 8.783
+        },
+        "tokens": {
+          "input": 0,
+          "output": 38285,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "boolean_feature_gate__LD73cnG",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 138.323,
+        "latency_breakdown": {
+          "env_setup": 8.397,
+          "agent_setup": 41.971,
+          "agent_exec": 40.115,
+          "verifier": 37.504
+        },
+        "tokens": {
+          "input": 0,
+          "output": 12522,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "boolean_feature_gate__GnS5TDj",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 145.376,
+        "latency_breakdown": {
+          "env_setup": 8.126,
+          "agent_setup": 45.79,
+          "agent_exec": 73.304,
+          "verifier": 7.77
+        },
+        "tokens": {
+          "input": 0,
+          "output": 28709,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "preview_plan_upgrade": {
+    "instruction": "# Prorated Plan Upgrade with Preview using Autumn\n\nBuild an Express.js billing upgrade flow with preview and confirmation endpoints using Autumn's `billing.previewAttach` and `attach` methods.\n\nImplement the following at `/home/user/myproject`:\n\n- `routes/billing.js` — Three billing routes mounted under `/billing`\n- Update `index.js` to mount the billing router under `/billing`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n\n### `POST /billing/preview-upgrade`\n- Accepts `{ \"customerId\": string, \"targetPlanId\": string }`.\n- Returns HTTP 400 with `{ \"error\": \"customerId and targetPlanId are required\" }` if either field is missing.\n- Calls `autumn.billing.previewAttach({ customerId, productId: targetPlanId })`.\n- Returns the preview response as JSON with HTTP 200.\n- On Autumn error, returns HTTP 502 with `{ \"error\": \"Billing service unavailable\", \"details\": err.message }`.\n\n### `POST /billing/confirm-upgrade`\n- Accepts `{ \"customerId\": string, \"targetPlanId\": string, \"confirmed\": boolean }`.\n- Returns HTTP 400 if any field is missing.\n- If `confirmed` is `false`, returns HTTP 200 with `{ \"status\": \"cancelled\" }`.\n- If `confirmed` is `true`, calls `autumn.attach({ customerId, productId: targetPlanId })` and returns `{ \"status\": \"upgraded\", \"customerId\": customerId, \"planId\": targetPlanId }`.\n- On error, returns HTTP 502.\n\n### `POST /billing/batch-check`\n- Accepts `{ \"customerIds\": string[], \"featureId\": string }`.\n- Calls `autumn.customers.check({ customerId, featureId })` for each customer **in parallel** using `Promise.all`.\n- Returns `{ \"results\": [{ \"customerId\", \"allowed\": boolean }] }`.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "preview_plan_upgrade__ASNbX2H",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 148.586,
+        "latency_breakdown": {
+          "env_setup": 7.775,
+          "agent_setup": 44.455,
+          "agent_exec": 48.186,
+          "verifier": 37.874
+        },
+        "tokens": {
+          "input": 0,
+          "output": 16517,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "preview_plan_upgrade__8nSgzF5",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 286.796,
+        "latency_breakdown": {
+          "env_setup": 8.321,
+          "agent_setup": 45.507,
+          "agent_exec": 213.856,
+          "verifier": 8.73
+        },
+        "tokens": {
+          "input": 0,
+          "output": 29545,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "preview_plan_upgrade__nFfoA8y",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 174.755,
+        "latency_breakdown": {
+          "env_setup": 8.51,
+          "agent_setup": 48.752,
+          "agent_exec": 98.004,
+          "verifier": 9.061
+        },
+        "tokens": {
+          "input": 0,
+          "output": 72149,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "get_or_create_customer": {
+    "instruction": "# Get or Create a Customer with Autumn\n\nWrite a Node.js script that syncs a customer record with Autumn using `customers.getOrCreate` and saves the result to a JSON file.\n\nImplement the following at `/home/user/myproject`:\n\n- `create_customer.js` — Initializes the Autumn SDK, calls `customers.getOrCreate`, prints the result as JSON to stdout, and saves output to `output.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node create_customer.js > output.json`.\n\nThe script must:\n1. Initialize `Autumn` with `process.env.AUTUMN_SECRET_KEY`.\n2. Call `autumn.customers.getOrCreate` with:\n   - `customerId`: `\"user_test_001\"`\n   - `name`: `\"Alice Testuser\"`\n   - `email`: `\"alice@example.com\"`\n3. Print the returned customer object as JSON to stdout.\n4. Use ES module syntax (`import`). The `package.json` already has `\"type\": \"module\"`.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "get_or_create_customer__7WNJGa2",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 111.782,
+        "latency_breakdown": {
+          "env_setup": 8.004,
+          "agent_setup": 23.388,
+          "agent_exec": 56.083,
+          "verifier": 13.827
+        },
+        "tokens": {
+          "input": 0,
+          "output": 93282,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "get_or_create_customer__krW3neM",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 165.006,
+        "latency_breakdown": {
+          "env_setup": 5.345,
+          "agent_setup": 21.523,
+          "agent_exec": 122.412,
+          "verifier": 5.375
+        },
+        "tokens": {
+          "input": 0,
+          "output": 82301,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "get_or_create_customer__gopvQYW",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 130.047,
+        "latency_breakdown": {
+          "env_setup": 8.426,
+          "agent_setup": 39.243,
+          "agent_exec": 62.086,
+          "verifier": 9.868
+        },
+        "tokens": {
+          "input": 0,
+          "output": 23321,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "get_or_create_customer__F92YW3A",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 87.946,
+        "latency_breakdown": {
+          "env_setup": 8.578,
+          "agent_setup": 43.395,
+          "agent_exec": 20.172,
+          "verifier": 5.466
+        },
+        "tokens": {
+          "input": 0,
+          "output": 11205,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "entity_workspace_limits": {
+    "instruction": "# Implement Multi-Tenant Workspace Usage Limits with Autumn\n\nBuild an Express.js API that manages workspace-level usage credits using Autumn's entity system. Each workspace is an Autumn entity under a parent organization customer, with its own independent credit balance.\n\nImplement the following REST API at `/home/user/myproject`:\n\n- `POST /workspaces` — Create a workspace entity in Autumn\n- `POST /workspaces/:workspaceId/use-credits` — Check and consume workspace credits\n- `GET /workspaces/:workspaceId/balance` — Fetch workspace entity balance\n- `DELETE /workspaces/:workspaceId` — Delete a workspace entity\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "entity_workspace_limits__TKAvRTX",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 332.601,
+        "latency_breakdown": {
+          "env_setup": 7.943,
+          "agent_setup": 36.825,
+          "agent_exec": 270.205,
+          "verifier": 7.242
+        },
+        "tokens": {
+          "input": 0,
+          "output": 379484,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "entity_workspace_limits__cSd2zVx",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 396.48,
+        "latency_breakdown": {
+          "env_setup": 8.391,
+          "agent_setup": 40.819,
+          "agent_exec": 327.879,
+          "verifier": 9.001
+        },
+        "tokens": {
+          "input": 0,
+          "output": 51488,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "entity_workspace_limits__Y2kAj4V",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 191.245,
+        "latency_breakdown": {
+          "env_setup": 8.453,
+          "agent_setup": 41.274,
+          "agent_exec": 122.349,
+          "verifier": 8.792
+        },
+        "tokens": {
+          "input": 0,
+          "output": 93172,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "attach_plan_to_customer": {
+    "instruction": "# Attach a Plan to a Customer with Autumn\n\nBuild a Node.js billing onboarding script that creates customers and attaches a free plan to them using Autumn's `attach` endpoint.\n\nImplement the following at `/home/user/myproject`:\n\n- `onboard_customer.js` — Creates two customers in parallel and attaches the `\"free\"` plan to both, then writes the result to `onboard_result.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node onboard_customer.js`.\n\nSteps to perform **in parallel where possible**:\n1. Create/sync customer `user_test_001` (`\"Bob Builder\"`, `bob@example.com`) and `user_test_002` (`\"Carol Coder\"`, `carol@example.com`) using `autumn.customers.getOrCreate` with `Promise.all`.\n2. After both customers are created, attach the plan `\"free\"` to both in parallel using `autumn.attach({ customerId, productId: 'free' })`.\n3. Save results to `/home/user/myproject/onboard_result.json`:\n   ```json\n   {\n     \"customers\": [\n       { \"customerId\": \"user_test_001\", \"planAttached\": true },\n       { \"customerId\": \"user_test_002\", \"planAttached\": true }\n     ]\n   }\n   ```\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "attach_plan_to_customer__dXiRLWv",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 140.282,
+        "latency_breakdown": {
+          "env_setup": 4.587,
+          "agent_setup": 36.751,
+          "agent_exec": 83.299,
+          "verifier": 5.292
+        },
+        "tokens": {
+          "input": 0,
+          "output": 59768,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-20-17",
+        "trial_name": "attach_plan_to_customer__kBtr7GS",
+        "agent": "pochi",
+        "model": "zai/glm-4.7",
+        "provider": "zai",
+        "passed": false,
+        "reward": null,
+        "error": true,
+        "latency_sec": 115.525,
+        "latency_breakdown": {
+          "env_setup": 3.208,
+          "agent_setup": 14.159,
+          "agent_exec": 98.002,
+          "verifier": null
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "attach_plan_to_customer__7QpjEuU",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 250.842,
+        "latency_breakdown": {
+          "env_setup": 5.259,
+          "agent_setup": 34.766,
+          "agent_exec": 194.424,
+          "verifier": 5.94
+        },
+        "tokens": {
+          "input": 0,
+          "output": 37498,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "attach_plan_to_customer__ZvAV2ek",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 151.534,
+        "latency_breakdown": {
+          "env_setup": 5.02,
+          "agent_setup": 24.948,
+          "agent_exec": 97.752,
+          "verifier": 13.416
+        },
+        "tokens": {
+          "input": 0,
+          "output": 67034,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "fail_open_resilient_check": {
+    "instruction": "# Fail-Open Resilient Feature Check with Autumn\n\nBuild a Node.js utility module that wraps Autumn's feature check with a fail-open pattern to keep your app available when the Autumn API is unreachable.\n\nImplement the following at `/home/user/myproject`:\n\n- `resilient_check.js` — Exports `resilientCheck` and `resilientCheckStrict` functions\n- `demo_check.js` — Runs `resilientCheck('user_test_001', 'messages')` and writes the result to `check_result.json`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node demo_check.js`.\n\n`resilientCheck(customerId, featureId)` must:\n- Call `autumn.customers.check({ customerId, featureId })`.\n- Return `{ allowed: true, source: 'autumn' }` on success.\n- On any error (network, timeout, 5xx), log `\"AUTUMN UNREACHABLE, FAILING OPEN\"` to stderr and return `{ allowed: true, source: 'fail-open' }`.\n\n`resilientCheckStrict(customerId, featureId)` must:\n- Use a separate Autumn instance configured with `failOpen: false`.\n- Re-throw any errors (does not fail open).\n- Return `{ allowed: result.allowed, source: 'autumn-strict' }` on success.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "fail_open_resilient_check__XG3ThKF",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 132.294,
+        "latency_breakdown": {
+          "env_setup": 4.433,
+          "agent_setup": 37.828,
+          "agent_exec": 72.08,
+          "verifier": 7.584
+        },
+        "tokens": {
+          "input": 0,
+          "output": 75496,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "fail_open_resilient_check__BpUycgi",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 389.497,
+        "latency_breakdown": {
+          "env_setup": 5.211,
+          "agent_setup": 38.578,
+          "agent_exec": 327.546,
+          "verifier": 7.751
+        },
+        "tokens": {
+          "input": 0,
+          "output": 43057,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "fail_open_resilient_check__JBaLZ86",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 79.656,
+        "latency_breakdown": {
+          "env_setup": 4.928,
+          "agent_setup": 34.615,
+          "agent_exec": 24.079,
+          "verifier": 5.605
+        },
+        "tokens": {
+          "input": 0,
+          "output": 11609,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "check_feature_access": {
+    "instruction": "# Check Feature Access with Autumn\n\nAdd a feature access check endpoint to an existing Express.js API using Autumn's `check` endpoint.\n\nImplement the following at `/home/user/myproject`:\n\n- Add route `POST /check-access` to the existing `index.js`\n\nUse `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000.\n\n`POST /check-access` must:\n1. Accept a JSON body with `customerId` and `featureId`.\n2. Call `autumn.customers.check({ customerId, featureId })`.\n3. Respond with HTTP 200 and the full Autumn response as JSON if `allowed` is `true`.\n4. Respond with HTTP 403 and the full Autumn response as JSON if `allowed` is `false`.\n",
+    "trials": [
+      {
+        "job_name": "2026-04-10__18-48-05",
+        "trial_name": "check_feature_access__YvvJTaP",
+        "agent": "pochi",
+        "model": "anthropic/claude-4-6-sonnet",
+        "provider": "anthropic",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 127.587,
+        "latency_breakdown": {
+          "env_setup": 7.905,
+          "agent_setup": 44.385,
+          "agent_exec": 27.667,
+          "verifier": 37.234
+        },
+        "tokens": {
+          "input": 0,
+          "output": 15235,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__19-04-17",
+        "trial_name": "check_feature_access__P4jpLEL",
+        "agent": "pochi",
+        "model": "google/gemini-3.1-pro",
+        "provider": "google",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 255.092,
+        "latency_breakdown": {
+          "env_setup": 8.316,
+          "agent_setup": 36.773,
+          "agent_exec": 188.567,
+          "verifier": 11.097
+        },
+        "tokens": {
+          "input": 0,
+          "output": 70904,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      },
+      {
+        "job_name": "2026-04-10__18-54-56",
+        "trial_name": "check_feature_access__H2m86Ei",
+        "agent": "pochi",
+        "model": "openai/gpt-5.2-codex",
+        "provider": "openai",
+        "passed": true,
+        "reward": 1,
+        "error": false,
+        "latency_sec": 152.171,
+        "latency_breakdown": {
+          "env_setup": 8.479,
+          "agent_setup": 44.583,
+          "agent_exec": 73.163,
+          "verifier": 15.565
+        },
+        "tokens": {
+          "input": 0,
+          "output": 55417,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  }
+}

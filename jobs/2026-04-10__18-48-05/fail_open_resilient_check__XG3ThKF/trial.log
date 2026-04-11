@@ -1,0 +1,79 @@
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model anthropic/claude-4-6-sonnet --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# Fail-Open Resilient Feature Check with Autumn
+
+Build a Node.js utility module that wraps Autumn's feature check with a fail-open pattern to keep your app available when the Autumn API is unreachable.
+
+Implement the following at `/home/user/myproject`:
+
+- `resilient_check.js` — Exports `resilientCheck` and `resilientCheckStrict` functions
+- `demo_check.js` — Runs `resilientCheck('user_test_001', 'messages')` and writes the result to `check_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node demo_check.js`.
+
+`resilientCheck(customerId, featureId)` must:
+- Call `autumn.customers.check({ customerId, featureId })`.
+- Return `{ allowed: true, source: 'autumn' }` on success.
+- On any error (network, timeout, 5xx), log `"AUTUMN UNREACHABLE, FAILING OPEN"` to stderr and return `{ allowed: true, source: 'fail-open' }`.
+
+`resilientCheckStrict(customerId, featureId)` must:
+- Use a separate Autumn instance configured with `failOpen: false`.
+- Re-throw any errors (does not fail open).
+- Return `{ allowed: result.allowed, source: 'autumn-strict' }` on success.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured

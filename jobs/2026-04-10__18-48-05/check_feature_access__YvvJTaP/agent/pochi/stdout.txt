@@ -1,0 +1,32 @@
+- Initializing MCP connections...
+You
+# Check Feature Access with Autumn Add a feature access check endpoint to an existing Express.js API using Autumn's `check` endpoint. Implement the following at `/home/user/myproject`: - Add route `POST /check-access` to the existing `index.js` Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000. `POST /check-access` must: 1. Accept a JSON body with `customerId` and `featureId`. 2. Call `autumn.customers.check({ customerId, featureId })`. 3. Respond with HTTP 200 and the full Autumn response as JSON if `allowed` is `true`. 4. Respond with HTTP 403 and the full Autumn response as JSON if `allowed` is `false`.   
+
+Pochi
+💭 Thinking for 92 characters   
+📂 Listing files in /home/user/myproject ✔ 
+📖 Reading /home/user/myproject/index.js ✔ 
+📖 Reading /home/user/myproject/package.json ✔ 
+The project uses ES modules (`"type": "module"`) and already has `autumn-js` as a dependency. Now I'll add the `POST /check-access` route to `index.js`.   
+🔧 Applying diff to /home/user/myproject/index.js ✔ 
+📖 Reading /home/user/myproject/index.js ✔ 
+🎉 Task Completed
+The `POST /check-access` route has been added to `/home/user/myproject/index.js`. Here's a summary of what was done:
+
+**Changes made to `index.js`:**
+
+1. **Imported `Autumn`** from `autumn-js` using ES module syntax (matching the project's `"type": "module"` config).
+2. **Instantiated the client** with `new Autumn(process.env.AUTUMN_SECRET_KEY)`.
+3. **Added `POST /check-access`** route that:
+   - Destructures `customerId` and `featureId` from the JSON request body.
+   - Calls `autumn.customers.check({ customerId, featureId })`.
+   - Returns **HTTP 200** with the full Autumn response if `result.allowed` is `true`.
+   - Returns **HTTP 403** with the full Autumn response if `result.allowed` is `false`.
+
+**Example request:**
+```bash
+curl -X POST http://localhost:3000/check-access \
+  -H "Content-Type: application/json" \
+  -d '{"customerId": "cus_123", "featureId": "feature_ai"}'
+```   
+  

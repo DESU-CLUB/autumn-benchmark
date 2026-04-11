@@ -1,0 +1,78 @@
+Running command: apt-get update && apt-get install -y curl ripgrep
+Command outputs captured
+Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
+Command outputs captured
+Running command: ln -sf ~/.pochi/bin/pochi /usr/local/bin/pochi
+Command outputs captured
+Running command: mkdir -p /tmp/gcloud && printenv GCP_SA_KEY_JSON_B64 | base64 -d > /tmp/gcloud/sa-key.json && chmod 644 /tmp/gcloud/sa-key.json && gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: gcloud auth activate-service-account --key-file=/tmp/gcloud/sa-key.json 2>/dev/null || true
+Command outputs captured
+Running command: mkdir -p ~/.pochi && cat << 'EOF' | sed -e "s/OPENAI_API_KEY/${OPENAI_API_KEY}/g" -e "s/DEEPINFRA_API_KEY/${DEEPINFRA_API_KEY}/g" -e "s/ANTHROPIC_API_KEY/${ANTHROPIC_API_KEY}/g" > ~/.pochi/config.jsonc
+{
+  "providers": {
+    "deepinfra": {
+      "kind": "openai",
+      "baseURL": "https://api.deepinfra.com/v1/openai",
+      "apiKey": "DEEPINFRA_API_KEY",
+      "models": {
+        "zai-org/GLM-4.7-Flash": {
+          "name": "glm-4.7-flash"
+        },
+        "moonshotai/Kimi-K2.5": {
+          "name": "kimi-K2.5"
+        },
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct": {
+          "name": "qwen3-coder-480b"
+        }
+      }
+    },
+    "anthropic": {
+      "kind": "openai",
+      "baseURL": "https://api.anthropic.com/v1",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "models": {
+        "claude-opus-4-6": {
+          "name": "claude-opus-4-6"
+        }
+      }
+    },
+    "openai": {
+      "kind": "openai",
+      "baseURL": "https://api.openai.com/v1",
+      "apiKey": "OPENAI_API_KEY",
+      "models": {
+        "gpt-5.4": {
+          "name": "gpt-5.4"
+        }
+      }
+    }
+  }
+}
+EOF
+Command outputs captured
+Running command: export PATH="$HOME/.pochi/bin:$PATH"; pochi --model openai/gpt-5.2-codex --max-steps 200 --max-retries 10 --blobs-dir /logs/agent/pochi/blobs --experimental-stream-trajectory /logs/agent/pochi/trajectory.jsonl > >(tee /logs/agent/pochi/stdout.txt) 2> >(tee /logs/agent/pochi/stderr.txt >&2) <<'EOF'
+# AI Generation with Balance Locking using Autumn
+
+Build a Node.js module that simulates an AI completion flow using Autumn's balance locking pattern to safely reserve and confirm token usage.
+
+Implement the following at `/home/user/myproject`:
+
+- `ai_generator.js` — Exports `generateWithBudget(customerId, maxTokens)` implementing the lock → work → finalize pattern
+- `run_generation.js` — Calls `generateWithBudget('user_test_001', 1000)` and writes the result to `generation_result.json`
+
+Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Run with `node run_generation.js`.
+
+`generateWithBudget(customerId, maxTokens)` must:
+1. Generate a unique `lockId` like `completion_<uuid>`.
+2. Call `autumn.customers.check` with `featureId: 'ai-tokens'`, `requiredBalance: maxTokens`, `sendEvent: true`, and `lock: { enabled: true, lockId, expiresAt: Date.now() + 60000 }`.
+3. If `allowed` is `false`, throw `Error('Insufficient ai-tokens balance')`.
+4. Simulate AI work (100ms delay) returning `tokensUsed = Math.floor(maxTokens * 0.75)`.
+5. Call `autumn.balances.finalize({ lockId, action: 'confirm', overrideValue: tokensUsed })`.
+6. Return `{ lockId, tokensUsed, confirmed: true }`.
+7. On error during the work phase, call `autumn.balances.finalize({ lockId, action: 'release' })` and re-throw.
+
+EOF
+Command outputs captured
+Running command: rm -f ~/.pochi/config.jsonc
+Command outputs captured

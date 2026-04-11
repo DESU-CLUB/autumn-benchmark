@@ -1,0 +1,40 @@
+{
+    "id": "c2aab978-ed81-4189-9cd5-1072561f31a0",
+    "started_at": "2026-04-10T18:48:07.481997",
+    "finished_at": "2026-04-10T18:53:40.971126",
+    "n_total_trials": 10,
+    "stats": {
+        "n_trials": 10,
+        "n_errors": 0,
+        "evals": {
+            "pochi__claude-4-6-sonnet__autumn-tasks": {
+                "n_trials": 10,
+                "n_errors": 0,
+                "metrics": [
+                    {
+                        "mean": 0.4
+                    }
+                ],
+                "reward_stats": {
+                    "reward": {
+                        "1.0": [
+                            "get_or_create_customer__7WNJGa2",
+                            "boolean_feature_gate__EVfUW8f",
+                            "attach_plan_to_customer__dXiRLWv",
+                            "fail_open_resilient_check__XG3ThKF"
+                        ],
+                        "0.0": [
+                            "balance_locking_ai_generation__p5FPifj",
+                            "usage_quota_hard_limit__Mqzu82P",
+                            "track_usage_with_idempotency__7HgH8Qx",
+                            "entity_workspace_limits__TKAvRTX",
+                            "preview_plan_upgrade__ASNbX2H",
+                            "check_feature_access__YvvJTaP"
+                        ]
+                    }
+                },
+                "exception_stats": {}
+            }
+        }
+    }
+}

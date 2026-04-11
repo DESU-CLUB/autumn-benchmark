@@ -1,0 +1,36 @@
+- Initializing MCP connections...
+You
+# Boolean Feature Gate for Premium Dashboard using Autumn Build an Express.js middleware and route that gates access to a premium dashboard using Autumn's boolean feature check. Implement the following at `/home/user/myproject`: - `middleware/auth.js` — Exports `requirePremium` middleware - `routes/dashboard.js` — Protected `GET /dashboard/premium` route - Update `index.js` to mount the dashboard router under `/dashboard` Use `autumn-js` SDK. The `AUTUMN_SECRET_KEY` environment variable is available. Server must run on port 3000. `requirePremium` middleware must: - Read `x-customer-id` from request headers; return HTTP 400 with `{ "error": "Missing customer ID" }` if absent. - Call `autumn.customers.check({ customerId, featureId: 'premium-dashboard' })`. - Call `next()` if `allowed` is `true`. - Return HTTP 403 with `{ "error": "Premium plan required" }` if `allowed` is `false`. `GET /dashboard/premium` must: - Use the `requirePremium` middleware. - Return `{ "data": "Premium dashboard content", "customerId": "<customerId>" }` on success.   
+
+Pochi
+💭 Thinking for 732 characters   
+💫 Executing mkdir -p /home/user/myproject/middleware /home/user/myproject/routes ✔ 
+💭 Thinking for 1223 characters   
+✏️  Writing /home/user/myproject/middleware/auth.js ✔ 
+💭 Thinking for 364 characters   
+✏️  Writing /home/user/myproject/routes/dashboard.js ✔ 
+💭 Thinking for 324 characters   
+✏️  Writing /home/user/myproject/index.js ✔ 
+💭 Thinking for 699 characters   
+🎉 Task Completed
+I have implemented the Express.js middleware and route to gate access to the premium dashboard using the `autumn-js` SDK. 
+
+Here are the files that were created:
+
+1. `/home/user/myproject/middleware/auth.js`:
+   - Extracts the `x-customer-id` from request headers.
+   - If absent, returns an HTTP 400 with `{"error": "Missing customer ID"}`.
+   - If present, makes a call to `autumn.customers.check({ customerId, featureId: 'premium-dashboard' })`.
+   - If `allowed` is true, calls `next()`.
+   - If `allowed` is false, returns an HTTP 403 with `{"error": "Premium plan required"}`.
+
+2. `/home/user/myproject/routes/dashboard.js`:
+   - Sets up an Express router.
+   - Adds the protected `GET /premium` route using the `requirePremium` middleware.
+   - Returns a successful payload with `{"data": "Premium dashboard content", "customerId": "<customerId>"}`.
+
+3. `/home/user/myproject/index.js`:
+   - Configures the Express app.
+   - Mounts the dashboard router under `/dashboard`.
+   - Starts the server on port 3000.   
+  
