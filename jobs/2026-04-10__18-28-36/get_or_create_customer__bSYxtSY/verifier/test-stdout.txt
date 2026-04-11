@@ -1,0 +1,94 @@
+Hit:1 https://deb.nodesource.com/node_24.x nodistro InRelease
+Hit:2 http://ports.ubuntu.com/ubuntu-ports noble InRelease
+Hit:3 http://ports.ubuntu.com/ubuntu-ports noble-updates InRelease
+Hit:4 http://ports.ubuntu.com/ubuntu-ports noble-backports InRelease
+Hit:5 http://ports.ubuntu.com/ubuntu-ports noble-security InRelease
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+downloading uv 0.9.5 aarch64-unknown-linux-gnu
+no checksums to verify
+installing to /root/.local/bin
+  uv
+  uvx
+everything's installed!
+
+To add $HOME/.local/bin to your PATH, either restart your shell or run:
+
+    source $HOME/.local/bin/env (sh, bash, zsh)
+    source $HOME/.local/bin/env.fish (fish)
+Downloading pygments (1.2MiB)
+ Downloading pygments
+Installed 5 packages in 5ms
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0 -- /root/.cache/uv/archive-v0/mUbYP4Le4gAcvXmKgV3vA/bin/python
+cachedir: .pytest_cache
+rootdir: /tests
+collecting ... collected 8 items
+
+../../tests/test_final_state.py::test_script_file_exists PASSED          [ 12%]
+../../tests/test_final_state.py::test_script_uses_autumn_sdk PASSED      [ 25%]
+../../tests/test_final_state.py::test_script_uses_correct_customer_id PASSED [ 37%]
+../../tests/test_final_state.py::test_output_file_exists FAILED          [ 50%]
+../../tests/test_final_state.py::test_output_is_valid_json FAILED        [ 62%]
+../../tests/test_final_state.py::test_output_contains_customer_id FAILED [ 75%]
+../../tests/test_final_state.py::test_output_contains_name FAILED        [ 87%]
+../../tests/test_final_state.py::test_output_contains_email FAILED       [100%]
+
+=================================== FAILURES ===================================
+___________________________ test_output_file_exists ____________________________
+
+    def test_output_file_exists():
+>       assert os.path.isfile(OUTPUT_FILE), (
+            f"output.json not found at {OUTPUT_FILE}. "
+            "Run the script and redirect stdout to output.json."
+        )
+E       AssertionError: output.json not found at /home/user/myproject/output.json. Run the script and redirect stdout to output.json.
+E       assert False
+E        +  where False = <function isfile at 0xf096eb790220>('/home/user/myproject/output.json')
+E        +    where <function isfile at 0xf096eb790220> = <module 'posixpath' (frozen)>.isfile
+E        +      where <module 'posixpath' (frozen)> = os.path
+
+/tests/test_final_state.py:38: AssertionError
+__________________________ test_output_is_valid_json ___________________________
+
+    def test_output_is_valid_json():
+>       with open(OUTPUT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/output.json'
+
+/tests/test_final_state.py:45: FileNotFoundError
+_______________________ test_output_contains_customer_id _______________________
+
+    def test_output_contains_customer_id():
+>       with open(OUTPUT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/output.json'
+
+/tests/test_final_state.py:53: FileNotFoundError
+__________________________ test_output_contains_name ___________________________
+
+    def test_output_contains_name():
+>       with open(OUTPUT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/output.json'
+
+/tests/test_final_state.py:64: FileNotFoundError
+__________________________ test_output_contains_email __________________________
+
+    def test_output_contains_email():
+>       with open(OUTPUT_FILE) as f:
+             ^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/myproject/output.json'
+
+/tests/test_final_state.py:73: FileNotFoundError
+=========================== short test summary info ============================
+FAILED ../../tests/test_final_state.py::test_output_file_exists - AssertionEr...
+FAILED ../../tests/test_final_state.py::test_output_is_valid_json - FileNotFo...
+FAILED ../../tests/test_final_state.py::test_output_contains_customer_id - Fi...
+FAILED ../../tests/test_final_state.py::test_output_contains_name - FileNotFo...
+FAILED ../../tests/test_final_state.py::test_output_contains_email - FileNotF...
+========================= 5 failed, 3 passed in 0.02s ==========================

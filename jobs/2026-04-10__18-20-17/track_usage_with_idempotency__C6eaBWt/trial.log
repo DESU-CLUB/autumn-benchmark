@@ -1,4 +1,0 @@
-Running command: apt-get update && apt-get install -y curl ripgrep
-Command outputs captured
-Running command: set -euo pipefail; curl -fsSL https://getpochi.com/install.sh | bash  && mkdir -p /logs/agent/pochi && ~/.pochi/bin/pochi --version
-Trial track_usage_with_idempotency__C6eaBWt cancelled
